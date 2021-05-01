@@ -3,13 +3,17 @@
 - algo for background removal : U^2-Net
 - for placing image on background : screenpoint (python package) 
 
-https://pypi.org/project/screenpoint/
+https://pypi.org/project/screenpoint/ <br>
 https://github.com/danielgatis/rembg
 
 
 ## PS
-Always remember to re-build with no cache `sudo docker-compose build --no-cache`
-
+- Always remember to re-build with no cache `sudo docker-compose build --no-cache` 
+- to generate a new secret key, simply use :
+```python
+import os
+os.urandom(24)
+```
 
 ## Working in a virtualenv
 

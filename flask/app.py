@@ -1,4 +1,5 @@
 from datetime import timedelta
+import os
 
 from redis import Redis
 from flask import Flask, render_template_string, request, session, redirect, url_for
@@ -11,7 +12,7 @@ app = Flask(__name__)
 # Details on the Secret Key: https://flask.palletsprojects.com/en/1.1.x/config/#SECRET_KEY
 # NOTE: The secret key is used to cryptographically-sign the cookies used for storing
 #       the session identifier.
-app.secret_key = 'BAD_SECRET_KEY'
+app.secret_key = os.environ.get("SECRET_KEY")
 
 # Configure Redis for storing the session data on the server-side
 app.config['SESSION_TYPE'] = 'redis'

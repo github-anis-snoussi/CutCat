@@ -10,6 +10,8 @@ services:
       - net
     depends_on:
       - redis
+    env_file:
+      - .env
 
   redis:
     container_name: catcat-session
