@@ -5,8 +5,17 @@ services:
     container_name: catcat-web
     build: .
     ports:
-      - "5000:5000"
+      - 5000:5000
+    networks:
+      - net
+    depends_on:
+      - redis
 
   redis:
     container_name: catcat-session
     image: redis:alpine
+    networks:
+      - net
+
+networks:
+  net:
