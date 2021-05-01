@@ -8,7 +8,7 @@ https://github.com/danielgatis/rembg
 
 
 ## PS
-Flask on its own is mokrez when it comes to networking, use Gunicorn in production.
+Always remember to re-build with no cache `sudo docker-compose build --no-cache`
 
 
 ## Working in a virtualenv

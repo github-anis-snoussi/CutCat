@@ -3,7 +3,7 @@ version: '3'
 services:
   web:
     container_name: catcat-web
-    build: .
+    build: ./flask
     ports:
       - 5000:5000
     networks:
