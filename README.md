@@ -7,6 +7,10 @@ https://pypi.org/project/screenpoint/
 https://github.com/danielgatis/rembg
 
 
+## PS
+Flask on its own is mokrez when it comes to networking, use Gunicorn in production.
+
+
 ## Working in a virtualenv
 
 make one :
