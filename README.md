@@ -20,7 +20,7 @@ os.urandom(24)
 
 - Can run the rembg in its own docker container : `sudo docker run -p 5000:5000  wbenhaddou/rembg-server`
 or when `docker-compose up` <br>
-open in browser : `http://localhost:8080?url=http://image.png`
+open in browser : `http://localhost:8080/?url=https://upload.wikimedia.org/wikipedia/commons/3/31/Cat_on_concrete_floor.JPG`
 
 ## Working in a virtualenv
 
