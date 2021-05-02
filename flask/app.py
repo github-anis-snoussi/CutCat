@@ -5,6 +5,9 @@ from redis import Redis
 from flask import Flask, render_template_string, request, session, redirect, url_for
 from flask_session import Session
 
+# Path for uploaded photos
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
+
 
 # Create the Flask application
 app = Flask(__name__)
@@ -20,42 +23,55 @@ app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_REDIS'] = Redis(host='redis', port=6379)
 
+# Configure the upload path
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 # Create and initialize the Flask-Session object AFTER `app` has been configured
 server_session = Session(app)
 
 
-@app.route('/set_email', methods=['GET', 'POST'])
-def set_email():
+@app.route('/set_background', methods=['GET', 'POST'])
+def set_background():
     if request.method == 'POST':
         # Save the form data to the session object
-        session['email'] = request.form['email_address']
-        return redirect(url_for('get_email'))
+        image = request.files['background_image']
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image.filename) 
+        image.save(image_path)
+        session['background'] = image.filename
+        return redirect(url_for('show_background'))
 
     return """
-        <form method="post">
-            <label for="email">Enter your email address:</label>
-            <input type="email" id="email" name="email_address" required />
+        <form method="post" action="/set_background" enctype="multipart/form-data">
+            <label for="background-image">Upload your background:</label>
+            <input type="file" id="background-image" name="background_image" accept="image/*" required />
             <button type="submit">Submit</button
         </form>
         """
 
 
-@app.route('/get_email')
-def get_email():
-    return render_template_string("""
-            {% if session['email'] %}
-                <h1>Welcome {{ session['email'] }}!</h1>
-            {% else %}
-                <h1>Welcome! Please enter your email <a href="{{ url_for('set_email') }}">here.</a></h1>
-            {% endif %}
-        """)
+@app.route('/show_background')
+def show_background():
+    if session['background'] :
+        return render_template_string("""
+                    <img src="{{ url_for('display_image', filename=session['background']) }}">
+            """)
+    else:
+        return render_template_string("""
+                    <h1>Welcome! Please upload your image here <a href="{{ url_for('set_background') }}">here.</a></h1>
+            """)
 
 
-@app.route('/delete_email')
-def delete_email():
-    # Clear the email stored in the session object
-    session.pop('email', default=None)
+@app.route('/delete_background')
+def delete_background():
+    # Clear the background stored in the session object
+    session.pop('background', default=None)
     return '<h1>Session deleted!</h1>'
+
+
+# Serve uploaded files (VERY VERY VERY BAD, but I'm focused on the functionality for now)
+@app.route('/display/<filename>')
+def display_image(filename):
+	return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
 
 if __name__ == '__main__':

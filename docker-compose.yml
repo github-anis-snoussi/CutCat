@@ -27,8 +27,6 @@ services:
       - 8080:5000
     networks:
       - net
-    env_file:
-      - .env
 
 networks:
   net:
