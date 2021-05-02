@@ -1,4 +1,7 @@
 # CatCat
+
+
+![Architecture Description](./overview.drawio.svg)
 ## INFOS
 - algo for background removal : U^2-Net
 - for placing image on background : screenpoint (python package) 
