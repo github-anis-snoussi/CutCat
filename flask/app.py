@@ -1,5 +1,7 @@
 from datetime import timedelta
 import os
+import calendar
+import time
 
 from redis import Redis
 from flask import Flask, render_template_string, request, session, redirect, url_for
@@ -35,9 +37,14 @@ def set_background():
     if request.method == 'POST':
         # Save the form data to the session object
         image = request.files['background_image']
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image.filename) 
+
+        # Generate a new filename
+        ts = calendar.timegm(time.gmtime())
+        file_name = "background-" + str(ts) + "." + image.filename.split(".")[-1]
+
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name) 
         image.save(image_path)
-        session['background'] = image.filename
+        session['background'] = file_name
         return redirect(url_for('show_background'))
 
     return """
