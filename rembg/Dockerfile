@@ -1,4 +1,3 @@
 
-FROM danielgatis/rembg
+FROM wbenhaddou/rembg-server
 EXPOSE 5000
-CMD ["rembg-server"]

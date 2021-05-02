@@ -19,5 +19,15 @@ services:
     networks:
       - net
 
+  rembg:
+    container_name: rembg-web
+    build: ./rembg
+    ports:
+      - 8080:5000
+    networks:
+      - net
+    env_file:
+      - .env
+
 networks:
   net:

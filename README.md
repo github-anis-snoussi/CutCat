@@ -15,6 +15,10 @@ import os
 os.urandom(24)
 ```
 
+- Can run the rembg in its own docker container : `sudo docker run -p 5000:5000  wbenhaddou/rembg-server`
+or when `docker-compose up` <br>
+open in browser : `http://localhost:8080?url=http://image.png`
+
 ## Working in a virtualenv
 
 make one :
