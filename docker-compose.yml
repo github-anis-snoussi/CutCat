@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+  
   web:
     container_name: catcat-web
     build: ./flask
@@ -11,7 +12,7 @@ services:
     depends_on:
       - redis
     env_file:
-      - .env
+      - ./flask/.env
 
   redis:
     container_name: catcat-session
@@ -20,7 +21,7 @@ services:
       - net
 
   rembg:
-    container_name: rembg-web
+    container_name: catcat-rembg
     build: ./rembg
     ports:
       - 8080:5000
