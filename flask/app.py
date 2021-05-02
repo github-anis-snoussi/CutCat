@@ -39,8 +39,9 @@ def set_background():
         image = request.files['background_image']
 
         # Generate a new filename
-        ts = calendar.timegm(time.gmtime())
-        file_name = "background-" + str(ts) + "." + image.filename.split(".")[-1]
+        # ts = calendar.timegm(time.gmtime())
+        # file_name = "background-" + str(ts) + "." + image.filename.split(".")[-1]
+        file_name = "background-" + session.sid + "." + image.filename.split(".")[-1]
 
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name) 
         image.save(image_path)
@@ -61,6 +62,7 @@ def show_background():
     if session['background'] :
         return render_template_string("""
                     <img src="{{ url_for('display_image', filename=session['background']) }}">
+                    <p> {{ session.sid }} </p>
             """)
     else:
         return render_template_string("""
