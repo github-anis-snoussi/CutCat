@@ -82,7 +82,10 @@ def delete_background():
     session.pop('background', default=None)
     return '<h1>Session deleted!</h1>'
 
-
+# Serve uploaded files (VERY VERY VERY BAD, but I'm focused on the functionality for now)
+@app.route('/display/<filename>')
+def display_image(filename):
+	return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
 @app.route('/add_item', methods=['GET', 'POST'])
 def add_item():
@@ -126,26 +129,11 @@ def add_item():
         </form>
         """
 
+# Final function to point item on background
+@app.route('/point_item', methods=['POST'])
+def add_item():
+    return "under-dev"
 
-# Serve uploaded files (VERY VERY VERY BAD, but I'm focused on the functionality for now)
-@app.route('/display/<filename>')
-def display_image(filename):
-	return redirect(url_for('static', filename='uploads/' + filename), code=301)
-
-
-@app.route('/test')
-def test():
-	request = Request(REMBG_URL)
-	ret = urlopen(request).read()
-
-	ts = calendar.timegm(time.gmtime())
-	item_file_name = "item-" + session.sid + "-" + str(ts)
-
-	with open(os.path.join(app.config['UPLOAD_FOLDER'], item_file_name),'wb') as output :
-		output.write(ret)
-
-
-	return item_file_name
 
 
 if __name__ == '__main__':
