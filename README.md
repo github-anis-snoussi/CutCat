@@ -38,3 +38,8 @@ generate requirements file :
 
 disconnect from it :
 `deactivate`
+
+## TODO
+- finish the point-item endpoint
+- find a way to share the session between the web and mobile
+- find a way to refresh the backgrond each time an item is aded
