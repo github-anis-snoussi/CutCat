@@ -2,10 +2,17 @@ from datetime import timedelta
 import os
 import calendar
 import time
+from urllib.request import Request, urlopen
+import urllib.parse
+
 
 from redis import Redis
 from flask import Flask, render_template_string, request, session, redirect, url_for
 from flask_session import Session
+
+
+# URL for the U^2-Net instance
+REMBG_URL = "http://rembg:5000"
 
 # Path for uploaded photos
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
@@ -39,12 +46,11 @@ def set_background():
         image = request.files['background_image']
 
         # Generate a new filename
-        # ts = calendar.timegm(time.gmtime())
-        # file_name = "background-" + str(ts) + "." + image.filename.split(".")[-1]
         file_name = "background-" + session.sid + "." + image.filename.split(".")[-1]
 
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name) 
         image.save(image_path)
+
         session['background'] = file_name
         return redirect(url_for('show_background'))
 
@@ -77,10 +83,69 @@ def delete_background():
     return '<h1>Session deleted!</h1>'
 
 
+
+@app.route('/add_item', methods=['GET', 'POST'])
+def add_item():
+    if request.method == 'POST':
+        # Save the sent image to the local storage
+        image = request.files['image']
+    
+        # Generate a new filename
+        ts = calendar.timegm(time.gmtime())
+        tmp_file_name = "tmp-" + session.sid + "-" + str(ts) + "." + image.filename.split(".")[-1]
+    
+        # Save a temporary file to be used with the U^2-Net
+        tmp_image_path = os.path.join(app.config['UPLOAD_FOLDER'], tmp_file_name) 
+        image.save(tmp_image_path)
+    
+    
+        # Remove background from the image
+        url = REMBG_URL + "?url=" + urllib.parse.quote_plus("http://web:5000/" + tmp_image_path)
+        RM_request = Request(url)
+        ret = urlopen(RM_request).read()
+    
+        # Save the new image
+        item_file_name = "item-" + session.sid + "-" + str(ts)
+        with open(os.path.join(app.config['UPLOAD_FOLDER'], item_file_name),'wb') as output :
+            output.write(ret)
+        
+        # We remove the tmp file
+        os.remove(tmp_image_path)
+    
+    
+        session['item'] = item_file_name
+        return item_file_name
+
+
+    # This is temporary
+    return """
+        <form method="post" action="/add_item" enctype="multipart/form-data">
+            <label for="item-image">Upload your item:</label>
+            <input type="file" id="item-image" name="image" accept="image/*" required />
+            <button type="submit">Submit</button
+        </form>
+        """
+
+
 # Serve uploaded files (VERY VERY VERY BAD, but I'm focused on the functionality for now)
 @app.route('/display/<filename>')
 def display_image(filename):
 	return redirect(url_for('static', filename='uploads/' + filename), code=301)
+
+
+@app.route('/test')
+def test():
+	request = Request(REMBG_URL)
+	ret = urlopen(request).read()
+
+	ts = calendar.timegm(time.gmtime())
+	item_file_name = "item-" + session.sid + "-" + str(ts)
+
+	with open(os.path.join(app.config['UPLOAD_FOLDER'], item_file_name),'wb') as output :
+		output.write(ret)
+
+
+	return item_file_name
 
 
 if __name__ == '__main__':
