@@ -10,4 +10,5 @@ RUN apt-get update -y; exit 0
 RUN apt-get install libgtk2.0-dev -y
 
 COPY . .
+RUN mkdir -p static/uploads
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
