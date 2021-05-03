@@ -28,5 +28,13 @@ services:
     networks:
       - net
 
+  screenpoint:
+    container_name: catcat-screenpoint
+    build: ./screenpoint
+    ports:
+      - 8081:5000
+    networks:
+      - net
+
 networks:
   net:
