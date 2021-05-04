@@ -1,4 +1,4 @@
-# CatCat
+# CutCat
 
 
 ![Architecture Description](./overview.drawio.svg)
