@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 import screenpoint
 import cv2
 import os
@@ -40,14 +40,13 @@ def point_screen():
         # Project view centroid to screen space.
         # x and y are the coordinate of the `view` centroid in `screen` space.
         x, y = screenpoint.project(view, screen)
-        coords = {"x": int(x), "y": int(y)}
-
+        
         # Delete the photos before exiting
         os.remove(screen_image_path)
         os.remove(view_image_path)
 
     
-        return jsonify(coords)
+        return str(x) + ":" + str(y)
 
 
 

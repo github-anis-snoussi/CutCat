@@ -4,7 +4,8 @@ import calendar
 import time
 from urllib.request import Request, urlopen
 import urllib.parse
-
+import requests
+from PIL import Image
 
 from redis import Redis
 from flask import Flask, render_template_string, request, session, redirect, url_for
@@ -13,6 +14,7 @@ from flask_session import Session
 
 # URL for the U^2-Net instance
 REMBG_URL = "http://rembg:5000"
+SCREENPOINT_URL = "http://screenpoint:5000/point_screen"
 
 # Path for uploaded photos
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
@@ -108,7 +110,7 @@ def add_item():
         ret = urlopen(RM_request).read()
     
         # Save the new image
-        item_file_name = "item-" + session.sid + "-" + str(ts)
+        item_file_name = "item-" + session.sid + "-" + str(ts) + ".png"
         with open(os.path.join(app.config['UPLOAD_FOLDER'], item_file_name),'wb') as output :
             output.write(ret)
         
@@ -130,11 +132,42 @@ def add_item():
         """
 
 # Final function to point item on background
-@app.route('/point_item', methods=['POST'])
+@app.route('/point_item', methods=[ 'GET', 'POST'])
 def point_item():
-    return "under-dev"
+    if request.method == 'POST':
+    
+        # Remove background from the image
+        r = requests.post(SCREENPOINT_URL, files=request.files)
+        [x,y] = r.text.split(':')
+        x = int(x)
+        y = int(y)
 
+        # Open the saved photos
+        background = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], session['background']))
+        item = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], session['item']))
 
+        # Paste the image in the right spot
+        # Use item also as a mask to get transparent background
+        background.paste(item, (x,y), item)
+
+        # Save the image now
+        background.save(os.path.join(app.config['UPLOAD_FOLDER'], "test.png"))
+
+        return r.text
+
+    # This is temporary
+    return """
+        <form method="post" action="/point_item" enctype="multipart/form-data">
+
+            <label for="screen">Upload your screen image:</label>
+            <input type="file" id="screen" name="screen" accept="image/*" required />
+
+            <label for="view">Upload your view image:</label>
+            <input type="file" id="view" name="view" accept="image/*" required />
+
+            <button type="submit">Submit</button
+        </form>
+        """
 
 if __name__ == '__main__':
     app.run( host="0.0.0.0" , port=5000 )

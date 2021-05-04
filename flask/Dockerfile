@@ -1,7 +1,11 @@
-FROM python:3.4-alpine
-ADD . /usr/src/app
+FROM python:3.4
+
 WORKDIR /usr/src/app
-RUN mkdir -p static/uploads
-EXPOSE 5000
+COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
+
+COPY . .
+RUN mkdir -p static/uploads
+
+EXPOSE 5000
 ENTRYPOINT ["./gunicorn.sh"]

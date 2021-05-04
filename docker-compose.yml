@@ -3,7 +3,7 @@ version: '3'
 services:
   
   web:
-    container_name: catcat-web
+    container_name: cutcat-web
     build: ./flask
     ports:
       - 5000:5000
@@ -15,13 +15,13 @@ services:
       - ./flask/.env
 
   redis:
-    container_name: catcat-session
+    container_name: cutcat-session
     image: redis:alpine
     networks:
       - net
 
   rembg:
-    container_name: catcat-rembg
+    container_name: cutcat-rembg
     build: ./rembg
     ports:
       - 8080:5000
@@ -29,7 +29,7 @@ services:
       - net
 
   screenpoint:
-    container_name: catcat-screenpoint
+    container_name: cutcat-screenpoint
     build: ./screenpoint
     ports:
       - 8081:5000
