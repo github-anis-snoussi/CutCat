@@ -131,7 +131,7 @@ def add_item():
 
 # Final function to point item on background
 @app.route('/point_item', methods=['POST'])
-def add_item():
+def point_item():
     return "under-dev"
 
 
