@@ -41,6 +41,16 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Create and initialize the Flask-Session object AFTER `app` has been configured
 server_session = Session(app)
 
+
+
+
+
+################################################################################################
+################################################################################################
+# WILL TAKE SESSION ID THE OLD FASHIONED WAY FROM THE COOKIE (THIS IS FOR WEB APP)
+################################################################################################
+################################################################################################
+
 # sets up the background image we will be using
 @app.route('/set_background', methods=['GET', 'POST'])
 def set_background():
@@ -85,12 +95,18 @@ def delete_background():
     session.pop('background', default=None)
     return '<h1>Session deleted!</h1>'
 
-# Serve uploaded files (VERY VERY VERY BAD, but I'm focused on the functionality for now)
-@app.route('/display/<filename>')
-def display_image(filename):
-	return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
 
+
+
+
+
+
+################################################################################################
+################################################################################################
+# WILL TAKE SESSION ID EXPLICITLY FROM REQUEST (THIS IS FOR MOBILE APP)
+################################################################################################
+################################################################################################
 
 # takes an image -> removes background -> saves as item in session
 @app.route('/add_item', methods=['GET', 'POST'])
@@ -172,6 +188,32 @@ def point_item():
             <button type="submit">Submit</button
         </form>
         """
+
+
+
+
+
+################################################################################################
+################################################################################################
+# DOESN'T EVEN REQUIRE SESSION
+################################################################################################
+################################################################################################
+
+# Serve uploaded files (VERY VERY VERY BAD, but I'm focused on the functionality for now)
+@app.route('/display/<filename>')
+def display_image(filename):
+	return redirect(url_for('static', filename='uploads/' + filename), code=301)
+
+
+
+
+
+
+################################################################################################
+################################################################################################
+# MAIN STUFF
+################################################################################################
+################################################################################################
 
 if __name__ == '__main__':
     app.run( host="0.0.0.0" , port=5000 )
