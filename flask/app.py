@@ -33,6 +33,7 @@ app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_REDIS'] = Redis(host='redis', port=6379)
+app.config['SESSION_COOKIE_SAMESITE'] = "Strict"
 
 # Configure the upload path
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
