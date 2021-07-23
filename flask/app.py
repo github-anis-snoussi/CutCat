@@ -140,9 +140,11 @@ def add_item():
 @app.route('/point_item', methods=[ 'GET', 'POST'])
 def point_item():
     if request.method == 'POST':
+
+        files = {'screen': open(os.path.join(app.config['UPLOAD_FOLDER'], session['background']), 'rb') , 'view' : request.files['view']}
     
         # Remove background from the image
-        r = requests.post(SCREENPOINT_URL, files=request.files)
+        r = requests.post(SCREENPOINT_URL, files=files)
         [x,y] = r.text.split(':')
         x = int(x)
         y = int(y)
@@ -156,16 +158,13 @@ def point_item():
         background.paste(item, (x,y), item)
 
         # Save the image now
-        background.save(os.path.join(app.config['UPLOAD_FOLDER'], "test.png"))
+        background.save(os.path.join(app.config['UPLOAD_FOLDER'], session['background']))
 
         return r.text
 
     # This is temporary
     return """
         <form method="post" action="/point_item" enctype="multipart/form-data">
-
-            <label for="screen">Upload your screen image:</label>
-            <input type="file" id="screen" name="screen" accept="image/*" required />
 
             <label for="view">Upload your view image:</label>
             <input type="file" id="view" name="view" accept="image/*" required />
