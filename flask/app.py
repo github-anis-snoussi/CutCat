@@ -113,12 +113,17 @@ def delete_background():
 @app.route('/add_item', methods=['GET', 'POST'])
 def add_item():
     if request.method == 'POST':
+
+        # THIS WILL BE LATER EXTRACTED FROM THE REQUEST
+        session_sid = session.sid
+        
+
         # Save the sent image to the local storage
         image = request.files['image']
     
         # Generate a new filename
         ts = calendar.timegm(time.gmtime())
-        tmp_file_name = "tmp-" + session.sid + "-" + str(ts) + "." + image.filename.split(".")[-1]
+        tmp_file_name = "tmp-" + session_sid + "-" + str(ts) + "." + image.filename.split(".")[-1]
     
         # Save a temporary file to be used with the U^2-Net
         tmp_image_path = os.path.join(app.config['UPLOAD_FOLDER'], tmp_file_name) 
@@ -131,15 +136,13 @@ def add_item():
         ret = urlopen(RM_request).read()
     
         # Save the new image
-        item_file_name = "item-" + session.sid + "-" + str(ts) + ".png"
+        item_file_name = "item-" + session_sid
         with open(os.path.join(app.config['UPLOAD_FOLDER'], item_file_name),'wb') as output :
             output.write(ret)
         
         # We remove the tmp file
         os.remove(tmp_image_path)
-    
-    
-        session['item'] = item_file_name
+
         return item_file_name
 
 
@@ -158,7 +161,15 @@ def add_item():
 def point_item():
     if request.method == 'POST':
 
-        files = {'screen': open(os.path.join(app.config['UPLOAD_FOLDER'], session['background']), 'rb') , 'view' : request.files['view']}
+        # THIS WILL BE LATER EXTRACTED FROM THE REQUEST
+        session_sid = session.sid
+
+        # THEN WE DETERMINE ITEM FILE NAME AND BACKGROUND FILE NAME
+        background_filename = "background-" + session_sid
+        item_filename = "item-" + session_sid
+
+
+        files = {'screen': open(os.path.join(app.config['UPLOAD_FOLDER'], background_filename), 'rb') , 'view' : request.files['view']}
     
         # Remove background from the image
         r = requests.post(SCREENPOINT_URL, files=files)
@@ -167,15 +178,15 @@ def point_item():
         y = int(y)
 
         # Open the saved photos
-        background = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], session['background']))
-        item = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], session['item']))
+        background = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], background_filename))
+        item = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], item_filename ))
 
         # Paste the image in the right spot
         # Use item also as a mask to get transparent background
         background.paste(item, (x,y), item)
 
         # Save the image now
-        background.save(os.path.join(app.config['UPLOAD_FOLDER'], session['background']))
+        background.save(os.path.join(app.config['UPLOAD_FOLDER'], background_filename))
 
         return r.text
 
