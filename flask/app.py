@@ -78,7 +78,7 @@ def set_background():
 # displays the background image
 @app.route('/show_background')
 def show_background():
-    if session['background'] :
+    if session.get('background') is not None:
         return render_template_string("""
                     <img src="{{ url_for('display_image', filename=session['background']) }}">
                     <p> {{ session.sid }} </p>
