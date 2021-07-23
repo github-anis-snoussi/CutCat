@@ -40,7 +40,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Create and initialize the Flask-Session object AFTER `app` has been configured
 server_session = Session(app)
 
-
+# sets up the background image we will be using
 @app.route('/set_background', methods=['GET', 'POST'])
 def set_background():
     if request.method == 'POST':
@@ -64,7 +64,7 @@ def set_background():
         </form>
         """
 
-
+# displays the background image
 @app.route('/show_background')
 def show_background():
     if session['background'] :
@@ -77,7 +77,7 @@ def show_background():
                     <h1>Welcome! Please upload your image here <a href="{{ url_for('set_background') }}">here.</a></h1>
             """)
 
-
+# deletes the background image
 @app.route('/delete_background')
 def delete_background():
     # Clear the background stored in the session object
@@ -89,6 +89,9 @@ def delete_background():
 def display_image(filename):
 	return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
+
+
+# takes an image -> removes background -> saves as item in session
 @app.route('/add_item', methods=['GET', 'POST'])
 def add_item():
     if request.method == 'POST':
@@ -132,6 +135,7 @@ def add_item():
         """
 
 # Final function to point item on background
+# takes camera view of background, and points item in session on background
 @app.route('/point_item', methods=[ 'GET', 'POST'])
 def point_item():
     if request.method == 'POST':
