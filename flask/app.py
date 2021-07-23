@@ -59,7 +59,7 @@ def set_background():
         image = request.files['background_image']
 
         # Generate a new filename
-        file_name = "background-" + session.sid + "." + image.filename.split(".")[-1]
+        file_name = "background-" + session.sid 
 
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name) 
         image.save(image_path)
@@ -92,6 +92,7 @@ def show_background():
 @app.route('/delete_background')
 def delete_background():
     # Clear the background stored in the session object
+    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], session['background'])) 
     session.pop('background', default=None)
     return '<h1>Session deleted!</h1>'
 
