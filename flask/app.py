@@ -59,10 +59,15 @@ def set_background():
         image = request.files['background_image']
 
         # Generate a new filename
-        file_name = "background-" + session.sid 
+        file_name = "background-" + session.sid + "." + image.filename.split(".")[-1]
 
+        # we save the backgroud image
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name) 
         image.save(image_path)
+
+        # and we also save the background image extension seperatly
+        with open(os.path.join(app.config['UPLOAD_FOLDER'], "extension-" + session.sid),'w',encoding = 'utf-8') as f:
+            f.write(image.filename.split(".")[-1])
 
         session['background'] = file_name
         return redirect(url_for('show_background'))
@@ -136,7 +141,7 @@ def add_item():
         ret = urlopen(RM_request).read()
     
         # Save the new image
-        item_file_name = "item-" + session_sid
+        item_file_name = "item-" + session_sid + ".png"
         with open(os.path.join(app.config['UPLOAD_FOLDER'], item_file_name),'wb') as output :
             output.write(ret)
         
@@ -164,10 +169,15 @@ def point_item():
         # THIS WILL BE LATER EXTRACTED FROM THE REQUEST
         session_sid = session.sid
 
-        # THEN WE DETERMINE ITEM FILE NAME AND BACKGROUND FILE NAME
-        background_filename = "background-" + session_sid
-        item_filename = "item-" + session_sid
+        # THEN WE DETERMINE ITEM FILE NAME
+        item_filename = "item-" + session_sid + ".png"
 
+
+        # AND DETERMINE THE BACKGROUND FILENAME
+        with open(os.path.join(app.config['UPLOAD_FOLDER'], "extension-" + session_sid),'r',encoding = 'utf-8') as f:
+            ext = f.read()
+
+        background_filename = "background-" + session_sid + "."  + ext
 
         files = {'screen': open(os.path.join(app.config['UPLOAD_FOLDER'], background_filename), 'rb') , 'view' : request.files['view']}
     
