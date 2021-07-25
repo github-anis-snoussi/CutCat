@@ -88,7 +88,7 @@ def show_background():
     if session.get('background') is not None:
         return render_template_string("""
                     <img src="{{ url_for('display_image', filename=session['background']) }}">
-                    <p> this is the session qr code: </p>
+                    <p> this is the session qr code: {{session.sid}} </p>
                     <img src="{{ qrcode(session.sid, error_correction='H', icon_img='https://i.imgur.com/NygqSXm.jpeg')  }}">
             """)
     else:
@@ -123,8 +123,7 @@ def add_item():
     if request.method == 'POST':
 
         # THIS WILL BE LATER EXTRACTED FROM THE REQUEST
-        session_sid = session.sid
-        
+        session_sid = request.form['session-id']
 
         # Save the sent image to the local storage
         image = request.files['image']
@@ -159,6 +158,8 @@ def add_item():
         <form method="post" action="/add_item" enctype="multipart/form-data">
             <label for="item-image">Upload your item:</label>
             <input type="file" id="item-image" name="image" accept="image/*" required />
+            <label for="session-id">Session ID:</label>
+            <input type="text" id="session-id" name="session-id" required />
             <button type="submit">Submit</button
         </form>
         """
@@ -170,7 +171,7 @@ def point_item():
     if request.method == 'POST':
 
         # THIS WILL BE LATER EXTRACTED FROM THE REQUEST
-        session_sid = session.sid
+        session_sid = request.form['session-id']
 
         # THEN WE DETERMINE ITEM FILE NAME
         item_filename = "item-" + session_sid + ".png"
@@ -206,10 +207,10 @@ def point_item():
     # This is temporary
     return """
         <form method="post" action="/point_item" enctype="multipart/form-data">
-
             <label for="view">Upload your view image:</label>
             <input type="file" id="view" name="view" accept="image/*" required />
-
+            <label for="session-id">Session ID:</label>
+            <input type="text" id="session-id" name="session-id" required />
             <button type="submit">Submit</button
         </form>
         """
