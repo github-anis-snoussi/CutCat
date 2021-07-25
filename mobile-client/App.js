@@ -13,11 +13,16 @@ import { BarCodeScanner } from "expo-barcode-scanner";
 const WINDOW_HEIGHT = Dimensions.get("window").height;
 const CAPTURE_SIZE = Math.floor(WINDOW_HEIGHT * 0.08);
 
+const SESSION_RE =
+  /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/;
+
 export default function App() {
   const cameraRef = useRef();
   const [hasPermission, setHasPermission] = useState(null);
   const [isPreview, setIsPreview] = useState(false);
   const [isCameraReady, setIsCameraReady] = useState(false);
+  const [isScanningQR, setIsScanningQR] = useState(true);
+  const [sessionId, setSessionId] = useState("");
 
   useEffect(() => {
     onHandlePermission();
@@ -76,8 +81,17 @@ export default function App() {
   };
 
   const scanSessionDetails = ({ type, data }) => {
-    if (type === BarCodeScanner.Constants.BarCodeType.qr) {
-      console.log("scanned QR code : ", data);
+    if (isScanningQR) {
+      setIsScanningQR(false);
+      if (
+        type === BarCodeScanner.Constants.BarCodeType.qr &&
+        SESSION_RE.test(data)
+      ) {
+        setSessionId(data);
+        console.log("scanned QR code : ", data);
+      } else {
+        setIsScanningQR(true);
+      }
     }
   };
 
