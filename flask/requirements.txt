@@ -4,3 +4,4 @@ flask_session
 gunicorn
 requests
 pillow
+flask-qrcode

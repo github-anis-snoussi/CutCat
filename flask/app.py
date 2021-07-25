@@ -6,6 +6,7 @@ from urllib.request import Request, urlopen
 import urllib.parse
 import requests
 from PIL import Image
+from flask_qrcode import QRcode
 
 from redis import Redis
 from flask import Flask, render_template_string, request, session, redirect, url_for
@@ -41,7 +42,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Create and initialize the Flask-Session object AFTER `app` has been configured
 server_session = Session(app)
 
-
+# We init the QR Code module
+QRcode(app)
 
 
 
@@ -86,7 +88,8 @@ def show_background():
     if session.get('background') is not None:
         return render_template_string("""
                     <img src="{{ url_for('display_image', filename=session['background']) }}">
-                    <p> {{ session.sid }} </p>
+                    <p> this is the session qr code: </p>
+                    <img src="{{ qrcode(session.sid) }}">
             """)
     else:
         return render_template_string("""
