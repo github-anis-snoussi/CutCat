@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import { AntDesign } from "@expo/vector-icons";
+import { BarCodeScanner } from "expo-barcode-scanner";
 
 const WINDOW_HEIGHT = Dimensions.get("window").height;
 const CAPTURE_SIZE = Math.floor(WINDOW_HEIGHT * 0.08);
@@ -74,6 +75,12 @@ export default function App() {
     setIsPreview(false);
   };
 
+  const scanSessionDetails = ({ type, data }) => {
+    if (type === BarCodeScanner.Constants.BarCodeType.qr) {
+      console.log("scanned QR code : ", data);
+    }
+  };
+
   if (hasPermission === null) {
     return <View />;
   }
@@ -89,6 +96,7 @@ export default function App() {
         type={Camera.Constants.Type.back}
         onCameraReady={onCameraReady}
         useCamera2Api={true}
+        onBarCodeScanned={scanSessionDetails}
       />
       <View style={styles.container}>
         {isPreview && (
