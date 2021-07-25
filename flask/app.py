@@ -89,7 +89,7 @@ def show_background():
         return render_template_string("""
                     <img src="{{ url_for('display_image', filename=session['background']) }}">
                     <p> this is the session qr code: </p>
-                    <img src="{{ qrcode(session.sid) }}">
+                    <img src="{{ qrcode(session.sid, error_correction='H', icon_img='https://i.imgur.com/NygqSXm.jpeg')  }}">
             """)
     else:
         return render_template_string("""
