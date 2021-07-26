@@ -8,7 +8,6 @@ import {
   Image,
 } from "react-native";
 import { Camera } from "expo-camera";
-import { AntDesign } from "@expo/vector-icons";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import axios from "axios";
 
@@ -25,6 +24,7 @@ export default function App() {
   const [isScanningQR, setIsScanningQR] = useState(true);
   const [sessionId, setSessionId] = useState("");
   const [hasScannedItem, setHasScannedItem] = useState(false);
+  const [itemId, setItemId] = useState("");
 
   useEffect(() => {
     onHandlePermission();
@@ -68,6 +68,7 @@ export default function App() {
         .post(SERVER_URL + "add_item", formData, config)
         .then((resp) => {
           console.log("all went well");
+          setItemId(resp.data);
           setHasScannedItem(true);
         })
         .catch((err) => {
@@ -114,7 +115,7 @@ export default function App() {
         <Image
           style={styles.overlayImage}
           source={{
-            uri: `${SERVER_URL}static/uploads/item-${sessionId}.png`,
+            uri: `${SERVER_URL}static/uploads/item-${sessionId}-${itemId}.png`,
           }}
         />
       )}
