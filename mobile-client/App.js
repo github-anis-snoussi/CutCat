@@ -100,7 +100,7 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: "black" }]}>
       <Camera
         ref={cameraRef}
         style={styles.camerqContainer}
