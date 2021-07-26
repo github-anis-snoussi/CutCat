@@ -21,10 +21,9 @@ export default function App() {
   const cameraRef = useRef();
   const [hasPermission, setHasPermission] = useState(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
-  const [isScanningQR, setIsScanningQR] = useState(true);
   const [sessionId, setSessionId] = useState("");
-  const [hasScannedItem, setHasScannedItem] = useState(false);
   const [itemId, setItemId] = useState("");
+  const [appStatus, setAppStatus] = useState("scanning-qr"); // can be: scanning-qr || loading || scaning-item || pointing-item
 
   useEffect(() => {
     onHandlePermission();
@@ -41,6 +40,7 @@ export default function App() {
 
   const onSnap = async () => {
     if (cameraRef.current && sessionId !== "") {
+      setAppStatus("loading");
       const options = { quality: 0.7 };
       const data = await cameraRef.current.takePictureAsync(options);
 
@@ -69,25 +69,26 @@ export default function App() {
         .then((resp) => {
           console.log("all went well");
           setItemId(resp.data);
-          setHasScannedItem(true);
+          setAppStatus("pointing-item");
         })
         .catch((err) => {
+          setAppStatus("scaning-item");
           console.log("something not working : ", err.response);
         });
     }
   };
 
   const scanSessionQR = ({ type, data }) => {
-    if (isScanningQR) {
-      setIsScanningQR(false);
+    if (appStatus === "scanning-qr") {
+      setAppStatus("loading");
       if (
         type === BarCodeScanner.Constants.BarCodeType.qr &&
         SESSION_RE.test(data)
       ) {
         setSessionId(data);
-        alert("Connected to session!");
+        setAppStatus("scaning-item");
       } else {
-        setIsScanningQR(true);
+        setAppStatus("scanning-qr");
       }
     }
   };
@@ -111,7 +112,7 @@ export default function App() {
         ratio={"4:3"}
       />
 
-      {hasScannedItem && (
+      {appStatus === "pointing-item" && (
         <Image
           style={styles.overlayImage}
           source={{
@@ -127,6 +128,9 @@ export default function App() {
           onPress={onSnap}
           style={styles.capture}
         />
+        {appStatus === "loading" && (
+          <Text style={{ color: "white" }}>Loading...</Text>
+        )}
       </View>
     </View>
   );
