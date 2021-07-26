@@ -1,7 +1,6 @@
-version: '3'
+version: "3"
 
 services:
-  
   web:
     container_name: cutcat-web
     build: ./flask
@@ -13,6 +12,8 @@ services:
       - redis
     env_file:
       - ./flask/.env
+    volumes:
+      - ./static:/usr/src/app/static
 
   redis:
     container_name: cutcat-session

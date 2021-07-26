@@ -93,8 +93,7 @@ export default function App() {
         axios
           .post(SERVER_URL + "point_item", formData, config)
           .then((resp) => {
-            console.log("all went well");
-            setItemId(resp.data);
+            console.log("all went well: ", resp.data);
             setAppStatus("scaning-item");
           })
           .catch((err) => {
