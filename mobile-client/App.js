@@ -14,7 +14,6 @@ import axios from "axios";
 
 const WINDOW_HEIGHT = Dimensions.get("window").height;
 const WINDOW_WIDTH = Dimensions.get("window").width;
-const CAPTURE_SIZE = Math.floor(WINDOW_HEIGHT * 0.08);
 const SESSION_RE =
   /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/;
 const SERVER_URL = "http://192.168.1.19:5000/";
@@ -96,38 +95,37 @@ export default function App() {
     return <View />;
   }
   if (hasPermission === false) {
-    return <Text style={styles.text}>No access to camera</Text>;
+    return <Text>No access to camera</Text>;
   }
 
   return (
     <View style={[styles.container, { backgroundColor: "black" }]}>
       <Camera
         ref={cameraRef}
-        style={styles.camerqContainer}
+        style={styles.cameraContainer}
         type={Camera.Constants.Type.back}
         onCameraReady={onCameraReady}
         useCamera2Api={true}
         onBarCodeScanned={scanSessionQR}
         ratio={"4:3"}
       />
-      <View style={styles.container}>
-        {hasScannedItem && (
-          <Image
-            style={{ width: 50, height: 50 }}
-            source={{
-              uri: `${SERVER_URL}static/uploads/item-${sessionId}.png`,
-            }}
-          />
-        )}
 
-        <View style={styles.bottomButtonsContainer}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            disabled={!isCameraReady}
-            onPress={onSnap}
-            style={styles.capture}
-          />
-        </View>
+      {hasScannedItem && (
+        <Image
+          style={styles.overlayImage}
+          source={{
+            uri: `${SERVER_URL}static/uploads/item-${sessionId}.png`,
+          }}
+        />
+      )}
+
+      <View style={styles.buttomControlsContainer}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          disabled={!isCameraReady}
+          onPress={onSnap}
+          style={styles.capture}
+        />
       </View>
     </View>
   );
@@ -137,40 +135,28 @@ const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
   },
-  text: {
-    color: "#fff",
-  },
-  bottomButtonsContainer: {
-    position: "absolute",
-    flexDirection: "row",
-    bottom: 28,
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  closeButton: {
-    position: "absolute",
-    top: 35,
-    right: 20,
-    height: 50,
-    width: 50,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#5A45FF",
-    opacity: 0.7,
-  },
   capture: {
     backgroundColor: "#5A45FF",
-    borderRadius: 5,
-    height: CAPTURE_SIZE,
-    width: CAPTURE_SIZE,
-    borderRadius: Math.floor(CAPTURE_SIZE / 2),
-    marginBottom: 28,
-    marginHorizontal: 30,
+    height: 70,
+    width: 70,
+    borderRadius: 35,
   },
-  camerqContainer: {
+  cameraContainer: {
     width: WINDOW_WIDTH,
     height: WINDOW_WIDTH * (4 / 3),
+  },
+  overlayImage: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    width: WINDOW_WIDTH,
+    height: WINDOW_WIDTH * (4 / 3),
+  },
+  buttomControlsContainer: {
+    width: WINDOW_WIDTH,
+    height: WINDOW_HEIGHT - WINDOW_WIDTH * (4 / 3),
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
