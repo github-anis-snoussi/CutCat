@@ -7,6 +7,7 @@ import urllib.parse
 import requests
 from PIL import Image
 from flask_qrcode import QRcode
+import random
 
 from redis import Redis
 from flask import Flask, render_template_string, request, session, redirect, url_for
@@ -122,7 +123,7 @@ def delete_background():
 def add_item():
     if request.method == 'POST':
 
-        # THIS WILL BE LATER EXTRACTED FROM THE REQUEST
+        # the session id of the host
         session_sid = request.form['session-id']
 
         # Save the sent image to the local storage
@@ -141,16 +142,19 @@ def add_item():
         url = REMBG_URL + "?url=" + urllib.parse.quote_plus("http://web:5000/" + tmp_image_path)
         RM_request = Request(url)
         ret = urlopen(RM_request).read()
+
+        # We generate a random number
+        random_number = random.randint(1,1000)
     
         # Save the new image
-        item_file_name = "item-" + session_sid + ".png"
+        item_file_name = "item-" + session_sid + "-" + str(random_number) + ".png"
         with open(os.path.join(app.config['UPLOAD_FOLDER'], item_file_name),'wb') as output :
             output.write(ret)
         
         # We remove the tmp file
         os.remove(tmp_image_path)
 
-        return item_file_name
+        return str(random_number)
 
 
     # This is temporary
@@ -170,11 +174,14 @@ def add_item():
 def point_item():
     if request.method == 'POST':
 
-        # THIS WILL BE LATER EXTRACTED FROM THE REQUEST
+        # the session id of the host
         session_sid = request.form['session-id']
 
+        # the item id
+        item_id = request.form['item-id']
+
         # THEN WE DETERMINE ITEM FILE NAME
-        item_filename = "item-" + session_sid + ".png"
+        item_filename = "item-" + session_sid + "-" + str(item_id) +  ".png"
 
 
         # AND DETERMINE THE BACKGROUND FILENAME
@@ -211,6 +218,8 @@ def point_item():
             <input type="file" id="view" name="view" accept="image/*" required />
             <label for="session-id">Session ID:</label>
             <input type="text" id="session-id" name="session-id" required />
+            <label for="item-id">Item ID:</label>
+            <input type="text" id="item-id" name="item-id" required />
             <button type="submit">Submit</button
         </form>
         """
