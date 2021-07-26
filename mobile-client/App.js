@@ -13,6 +13,7 @@ import { BarCodeScanner } from "expo-barcode-scanner";
 import axios from "axios";
 
 const WINDOW_HEIGHT = Dimensions.get("window").height;
+const WINDOW_WIDTH = Dimensions.get("window").width;
 const CAPTURE_SIZE = Math.floor(WINDOW_HEIGHT * 0.08);
 const SESSION_RE =
   /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/;
@@ -21,7 +22,6 @@ const SERVER_URL = "http://192.168.1.19:5000/";
 export default function App() {
   const cameraRef = useRef();
   const [hasPermission, setHasPermission] = useState(null);
-  const [isPreview, setIsPreview] = useState(false);
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isScanningQR, setIsScanningQR] = useState(true);
   const [sessionId, setSessionId] = useState("");
@@ -77,12 +77,7 @@ export default function App() {
     }
   };
 
-  const cancelPreview = async () => {
-    await cameraRef.current.resumePreview();
-    setIsPreview(false);
-  };
-
-  const scanSessionDetails = ({ type, data }) => {
+  const scanSessionQR = ({ type, data }) => {
     if (isScanningQR) {
       setIsScanningQR(false);
       if (
@@ -108,11 +103,12 @@ export default function App() {
     <View style={styles.container}>
       <Camera
         ref={cameraRef}
-        style={styles.container}
+        style={styles.camerqContainer}
         type={Camera.Constants.Type.back}
         onCameraReady={onCameraReady}
         useCamera2Api={true}
-        onBarCodeScanned={scanSessionDetails}
+        onBarCodeScanned={scanSessionQR}
+        ratio={"4:3"}
       />
       <View style={styles.container}>
         {hasScannedItem && (
@@ -123,25 +119,15 @@ export default function App() {
             }}
           />
         )}
-        {isPreview && (
+
+        <View style={styles.bottomButtonsContainer}>
           <TouchableOpacity
-            onPress={cancelPreview}
-            style={styles.closeButton}
             activeOpacity={0.7}
-          >
-            <AntDesign name="close" size={32} color="#fff" />
-          </TouchableOpacity>
-        )}
-        {!isPreview && (
-          <View style={styles.bottomButtonsContainer}>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              disabled={!isCameraReady}
-              onPress={onSnap}
-              style={styles.capture}
-            />
-          </View>
-        )}
+            disabled={!isCameraReady}
+            onPress={onSnap}
+            style={styles.capture}
+          />
+        </View>
       </View>
     </View>
   );
@@ -182,5 +168,9 @@ const styles = StyleSheet.create({
     borderRadius: Math.floor(CAPTURE_SIZE / 2),
     marginBottom: 28,
     marginHorizontal: 30,
+  },
+  camerqContainer: {
+    width: WINDOW_WIDTH,
+    height: WINDOW_WIDTH * (4 / 3),
   },
 });
