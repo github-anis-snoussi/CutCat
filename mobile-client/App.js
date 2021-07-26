@@ -52,29 +52,56 @@ export default function App() {
       let match = /\.(\w+)$/.exec(filename);
       let type = match ? `image/${match[1]}` : `image`;
 
-      // Upload the image using the fetch and FormData APIs
-      let formData = new FormData();
-      // Assume "photo" is the name of the form field the server expects
-      formData.append("image", { uri: localUri, name: filename, type });
-      formData.append("session-id", sessionId);
+      if (appStatus === "scaning-item") {
+        // Upload the image using the fetch and FormData APIs
+        let formData = new FormData();
+        // Assume "photo" is the name of the form field the server expects
+        formData.append("image", { uri: localUri, name: filename, type });
+        formData.append("session-id", sessionId);
 
-      const config = {
-        headers: {
-          "Content-Type": "multipart/form-data;",
-        },
-      };
+        const config = {
+          headers: {
+            "Content-Type": "multipart/form-data;",
+          },
+        };
 
-      axios
-        .post(SERVER_URL + "add_item", formData, config)
-        .then((resp) => {
-          console.log("all went well");
-          setItemId(resp.data);
-          setAppStatus("pointing-item");
-        })
-        .catch((err) => {
-          setAppStatus("scaning-item");
-          console.log("something not working : ", err.response);
-        });
+        axios
+          .post(SERVER_URL + "add_item", formData, config)
+          .then((resp) => {
+            console.log("all went well");
+            setItemId(resp.data);
+            setAppStatus("pointing-item");
+          })
+          .catch((err) => {
+            setAppStatus("scaning-item");
+            console.log("something not working : ", err.response);
+          });
+      } else if (appStatus === "pointing-item") {
+        // Upload the image using the fetch and FormData APIs
+        let formData = new FormData();
+        // Assume "photo" is the name of the form field the server expects
+        formData.append("view", { uri: localUri, name: filename, type });
+        formData.append("session-id", sessionId);
+        formData.append("item-id", itemId.toString());
+
+        const config = {
+          headers: {
+            "Content-Type": "multipart/form-data;",
+          },
+        };
+
+        axios
+          .post(SERVER_URL + "point_item", formData, config)
+          .then((resp) => {
+            console.log("all went well");
+            setItemId(resp.data);
+            setAppStatus("scaning-item");
+          })
+          .catch((err) => {
+            setAppStatus("pointing-item");
+            console.log("something not working : ", err.response);
+          });
+      }
     }
   };
 
@@ -128,9 +155,8 @@ export default function App() {
           onPress={onSnap}
           style={styles.capture}
         />
-        {appStatus === "loading" && (
-          <Text style={{ color: "white" }}>Loading...</Text>
-        )}
+
+        <Text style={{ color: "white" }}> {appStatus} </Text>
       </View>
     </View>
   );
