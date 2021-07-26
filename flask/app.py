@@ -202,6 +202,9 @@ def point_item():
         background = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], background_filename))
         item = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], item_filename ))
 
+        # THIS SHOULD BE DONE IN A BETTER WAY, BUT FOR NOW I AM DOWNSIZING x10
+        item = item.resize((round(item.size[0]*0.1), round(item.size[1]*0.1)))
+
         # Paste the image in the right spot
         # Use item also as a mask to get transparent background
         background.paste(item, (x,y), item)
