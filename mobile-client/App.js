@@ -5,16 +5,18 @@ import {
   View,
   Text,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { Camera } from "expo-camera";
 import { AntDesign } from "@expo/vector-icons";
 import { BarCodeScanner } from "expo-barcode-scanner";
+import axios from "axios";
 
 const WINDOW_HEIGHT = Dimensions.get("window").height;
 const CAPTURE_SIZE = Math.floor(WINDOW_HEIGHT * 0.08);
-
 const SESSION_RE =
   /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/;
+const SERVER_URL = "http://192.168.1.19:5000/";
 
 export default function App() {
   const cameraRef = useRef();
@@ -23,6 +25,7 @@ export default function App() {
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isScanningQR, setIsScanningQR] = useState(true);
   const [sessionId, setSessionId] = useState("");
+  const [hasScannedItem, setHasScannedItem] = useState(false);
 
   useEffect(() => {
     onHandlePermission();
@@ -38,40 +41,39 @@ export default function App() {
   };
 
   const onSnap = async () => {
-    if (cameraRef.current) {
-      const options = { quality: 0.7, base64: true };
+    if (cameraRef.current && sessionId !== "") {
+      const options = { quality: 0.7 };
       const data = await cameraRef.current.takePictureAsync(options);
-      const source = data.base64;
 
-      if (source) {
-        await cameraRef.current.pausePreview();
-        setIsPreview(true);
+      // this the file returned by the camera
+      let localUri = data.uri;
+      let filename = localUri.split("/").pop();
 
-        let base64Img = `data:image/jpg;base64,${source}`;
-        let apiUrl = "http://cutcat.web/upload";
-        let data = {
-          file: base64Img,
-          host_session_id: "<your-upload-preset>",
-        };
+      // Infer the type of the image
+      let match = /\.(\w+)$/.exec(filename);
+      let type = match ? `image/${match[1]}` : `image`;
 
-        fetch(apiUrl, {
-          body: JSON.stringify(data),
-          headers: {
-            "content-type": "application/json",
-          },
-          method: "POST",
+      // Upload the image using the fetch and FormData APIs
+      let formData = new FormData();
+      // Assume "photo" is the name of the form field the server expects
+      formData.append("image", { uri: localUri, name: filename, type });
+      formData.append("session-id", sessionId);
+
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data;",
+        },
+      };
+
+      axios
+        .post(SERVER_URL + "add_item", formData, config)
+        .then((resp) => {
+          console.log("all went well");
+          setHasScannedItem(true);
         })
-          .then(async (response) => {
-            let data = await response.json();
-            if (data.secure_url) {
-              alert("Upload successful");
-            }
-          })
-          .catch((err) => {
-            alert("Cannot upload");
-            console.log(err);
-          });
-      }
+        .catch((err) => {
+          console.log("something not working : ", err.response);
+        });
     }
   };
 
@@ -88,7 +90,7 @@ export default function App() {
         SESSION_RE.test(data)
       ) {
         setSessionId(data);
-        console.log("scanned QR code : ", data);
+        alert("Connected to session!");
       } else {
         setIsScanningQR(true);
       }
@@ -113,6 +115,14 @@ export default function App() {
         onBarCodeScanned={scanSessionDetails}
       />
       <View style={styles.container}>
+        {hasScannedItem && (
+          <Image
+            style={{ width: 50, height: 50 }}
+            source={{
+              uri: `${SERVER_URL}static/uploads/item-${sessionId}.png`,
+            }}
+          />
+        )}
         {isPreview && (
           <TouchableOpacity
             onPress={cancelPreview}
