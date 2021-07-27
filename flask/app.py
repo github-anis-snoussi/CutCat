@@ -54,6 +54,12 @@ QRcode(app)
 ################################################################################################
 ################################################################################################
 
+# displays the background image
+@app.route('/get_cur_session', methods=['GET'])
+def get_cur_session():
+    return session.sid
+
+
 # sets up the background image we will be using
 @app.route('/set_background', methods=['GET', 'POST'])
 def set_background():
