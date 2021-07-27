@@ -10,9 +10,10 @@ from flask_qrcode import QRcode
 import random
 
 from redis import Redis
-from flask import Flask, render_template_string, request, session, redirect, url_for
+from flask import Flask, render_template_string, request, session, redirect, url_for, render_template
 from flask_session import Session
-
+from pubsub import pub
+from flask_socketio import SocketIO
 
 # URL for the U^2-Net instance
 REMBG_URL = "http://rembg:5000"
@@ -46,7 +47,8 @@ server_session = Session(app)
 # We init the QR Code module
 QRcode(app)
 
-
+# turn the flask app into a socketio app
+socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 
 ################################################################################################
 ################################################################################################
@@ -250,6 +252,33 @@ def display_image(filename):
 
 
 
+################################################################################################
+################################################################################################
+# SOCKETS AND PUB_SUB STUFF
+################################################################################################
+################################################################################################
+
+def listener(arg1):
+    print('Function listener1 received:')
+    print('  arg1 =', arg1)
+    socketio.emit('newmessage',{'message':arg1})
+
+
+pub.subscribe(listener, 'rootTopic')
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    return render_template('index.html')
+
+@app.route('/post', methods=['POST'])
+def post():
+    pub.sendMessage('rootTopic', arg1='post')
+    return "all good!"
+
+@socketio.on('connect')
+def connect():
+    pub.sendMessage('rootTopic', arg1='connected to socket')
+    print('Client connected')
 
 
 
@@ -260,4 +289,4 @@ def display_image(filename):
 ################################################################################################
 
 if __name__ == '__main__':
-    app.run( host="0.0.0.0" , port=5000 )
+    socketio.run(app)

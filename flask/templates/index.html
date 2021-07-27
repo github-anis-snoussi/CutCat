@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <div id="message"></div>
+    <button id="btn">CLICK</button>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        //connect to the socket server.
+        var socket = io.connect(
+          "http://" + document.domain + ":" + location.port
+        );
+        $("#btn").on("click", function () {
+          fetch("http://" + document.domain + ":" + location.port + "/post", {
+            method: "POST",
+          });
+        });
+        //receive message details from server
+        socket.on("newmessage", function (msg) {
+          console.log("Received message" + msg.message);
+          message = "<p>" + msg.message + "</p>";
+
+          $("#message").append(message);
+        });
+      });
+    </script>
+  </body>
+</html>
