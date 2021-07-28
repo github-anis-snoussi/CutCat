@@ -7,7 +7,8 @@
   </head>
   <body>
     <div id="message"></div>
-    <button id="btn">CLICK</button>
+    <button id="btn-join">JOIN</button>
+    <button id="btn-post-topic">POST-TOPIC</button>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>
@@ -17,13 +18,21 @@
           "http://" + document.domain + ":" + location.port
         );
 
-        $("#btn").on("click", function () {
-          fetch("http://" + document.domain + ":" + location.port + "/post", {
+        $("#btn-join").on("click", function () {
+          fetch("http://" + document.domain + ":" + location.port + "/join", {
             method: "POST",
           });
         });
+        $("#btn-post-topic").on("click", function () {
+          fetch(
+            "http://" + document.domain + ":" + location.port + "/post_topic",
+            {
+              method: "POST",
+            }
+          );
+        });
         //receive message details from server
-        socket.on("newmessage", function (msg) {
+        socket.on("7583ec81-d450-4d81-813b-d9d5e3b6c04c", function (msg) {
           console.log("Received message" + msg);
           message = "<p>" + msg.message + "</p>";
 

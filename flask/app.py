@@ -262,21 +262,20 @@ def favicon():
 ################################################################################################
 
 def listener(topic=pub.AUTO_TOPIC,payload=None):
-    socketio.emit('newmessage',{'message': 'received on {} this: {}'.format(topic , payload)  })
+    # always get the topic in this form TOPIC_NAME(1), so I have to clean it
+    actual_topic_name = str(topic)[:-3]
+    socketio.emit(actual_topic_name,{'message': 'received on {} this: {}'.format(actual_topic_name , payload)  })
 
 
-@socketio.on('connect')
-def connect():
-    pub.subscribe(listener, 'rootTopic')
-    pub.sendMessage('rootTopic', payload='connected to socket')
-
-
-@app.route('/post', methods=['POST'])
-def post():
-    pub.sendMessage('rootTopic', payload='test post with {}'.format(session.sid))
+@app.route('/join', methods=['POST'])
+def join():
+    pub.subscribe(listener, session.sid)
     return "all good!"
 
-
+@app.route('/post_topic', methods=['POST'])
+def post_topic():
+    pub.sendMessage(session.sid, payload='testing')
+    return "all good!"
 
 ################################################################################################
 ################################################################################################
