@@ -13,7 +13,7 @@ from redis import Redis
 from flask import Flask, render_template_string, request, session, redirect, url_for, render_template, send_from_directory
 from flask_session import Session
 from pubsub import pub
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, join_room
 
 # URL for the U^2-Net instance
 REMBG_URL = "http://rembg:5000"
@@ -261,23 +261,43 @@ def favicon():
 ################################################################################################
 ################################################################################################
 
-def listener(arg1):
-    print('Function listener1 received:')
-    print('  arg1 =', arg1)
-    socketio.emit('newmessage',{'message':arg1})
+def listener(topic=pub.AUTO_TOPIC,payload=None):
+    socketio.emit('newmessage',{'message': 'received on {} this: {}'.format(topic , payload)  })
 
 
 @socketio.on('connect')
 def connect():
     pub.subscribe(listener, 'rootTopic')
-    pub.sendMessage('rootTopic', arg1='connected to socket')
+    pub.sendMessage('rootTopic', payload='connected to socket')
 
 
 @app.route('/post', methods=['POST'])
 def post():
-    pub.sendMessage('rootTopic', arg1=session.sid)
+    pub.sendMessage('rootTopic', payload='test post with {}'.format(session.sid))
     return "all good!"
 
+
+# @socketio.on('connect')
+# def connect():
+#     socketio.emit('newmessage',{'message':'connected to socket.'})
+
+
+# @app.route('/post', methods=['POST'])
+# def post():
+#     socketio.emit('newmessage',{'message':'post %s' % session.get('room', '')})
+
+
+
+# @socketio.on('join')
+# def on_join(data):
+#     channel = data['channel']
+#     join_room(channel)
+
+# @socketio.on("send message")
+# def message(data):
+#     room = data['channel']
+#     message = data['message']
+#     socketio.emit('newmessage', {'message':message}, room=room)
 
 
 

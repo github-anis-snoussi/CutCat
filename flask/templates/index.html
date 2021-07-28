@@ -16,10 +16,17 @@
         var socket = io.connect(
           "http://" + document.domain + ":" + location.port
         );
+        // socket.emit("join", { channel: "session-id-fetched" });
+
         $("#btn").on("click", function () {
           fetch("http://" + document.domain + ":" + location.port + "/post", {
             method: "POST",
           });
+
+          // socket.emit("send message", {
+          //   message: "this is sent back to me",
+          //   channel: "session-id-fetched",
+          // });
         });
         //receive message details from server
         socket.on("newmessage", function (msg) {
