@@ -10,7 +10,7 @@ from flask_qrcode import QRcode
 import random
 
 from redis import Redis
-from flask import Flask, render_template_string, request, session, redirect, url_for, render_template
+from flask import Flask, render_template_string, request, session, redirect, url_for, render_template, send_from_directory
 from flask_session import Session
 from pubsub import pub
 from flask_socketio import SocketIO
@@ -250,6 +250,9 @@ def point_item():
 def display_image(filename):
 	return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
+@app.route('/favicon.ico') 
+def favicon(): 
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 ################################################################################################
@@ -268,7 +271,8 @@ pub.subscribe(listener, 'rootTopic')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    fav_icon = url_for('static', filename='favicon.ico')
+    return render_template('index.html', **locals())
 
 @app.route('/post', methods=['POST'])
 def post():
