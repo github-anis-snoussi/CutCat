@@ -13,7 +13,7 @@ from redis import Redis
 from flask import Flask, render_template_string, request, session, redirect, url_for, render_template, send_from_directory
 from flask_session import Session
 from pubsub import pub
-from flask_socketio import SocketIO, join_room
+from flask_socketio import SocketIO
 
 # URL for the U^2-Net instance
 REMBG_URL = "http://rembg:5000"
@@ -275,29 +275,6 @@ def connect():
 def post():
     pub.sendMessage('rootTopic', payload='test post with {}'.format(session.sid))
     return "all good!"
-
-
-# @socketio.on('connect')
-# def connect():
-#     socketio.emit('newmessage',{'message':'connected to socket.'})
-
-
-# @app.route('/post', methods=['POST'])
-# def post():
-#     socketio.emit('newmessage',{'message':'post %s' % session.get('room', '')})
-
-
-
-# @socketio.on('join')
-# def on_join(data):
-#     channel = data['channel']
-#     join_room(channel)
-
-# @socketio.on("send message")
-# def message(data):
-#     room = data['channel']
-#     message = data['message']
-#     socketio.emit('newmessage', {'message':message}, room=room)
 
 
 
