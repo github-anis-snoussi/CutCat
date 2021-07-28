@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>
-      $(document).ready(function () {
+      $(document).ready(async function () {
         //connect to the socket server.
         var socket = io.connect(
           "http://" + document.domain + ":" + location.port
@@ -31,13 +31,27 @@
             }
           );
         });
-        //receive message details from server
-        socket.on("7583ec81-d450-4d81-813b-d9d5e3b6c04c", function (msg) {
-          console.log("Received message" + msg);
-          message = "<p>" + msg.message + "</p>";
+        fetch(
+          "http://" +
+            document.domain +
+            ":" +
+            location.port +
+            "/get_cur_session",
+          { method: "GET" }
+        )
+          .then((rez) => {
+            return rez.text();
+          })
+          .then((session_id_as_topic_name) => {
+            console.log("current session : ", session_id_as_topic_name);
+            //receive message details from server
+            socket.on(session_id_as_topic_name, function (msg) {
+              console.log("Received message" + msg);
+              message = "<p>" + msg.message + "</p>";
 
-          $("#message").append(message);
-        });
+              $("#message").append(message);
+            });
+          });
       });
     </script>
   </body>
