@@ -48,7 +48,7 @@ server_session = Session(app)
 QRcode(app)
 
 # turn the flask app into a socketio app
-socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
+socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True, manage_sessions=False)
 
 ################################################################################################
 ################################################################################################
@@ -267,22 +267,17 @@ def listener(arg1):
     socketio.emit('newmessage',{'message':arg1})
 
 
-pub.subscribe(listener, 'rootTopic')
+@socketio.on('connect')
+def connect():
+    pub.subscribe(listener, 'rootTopic')
+    pub.sendMessage('rootTopic', arg1='connected to socket')
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    fav_icon = url_for('static', filename='favicon.ico')
-    return render_template('index.html', **locals())
 
 @app.route('/post', methods=['POST'])
 def post():
-    pub.sendMessage('rootTopic', arg1='post')
+    pub.sendMessage('rootTopic', arg1=session.sid)
     return "all good!"
 
-@socketio.on('connect')
-def connect():
-    pub.sendMessage('rootTopic', arg1='connected to socket')
-    print('Client connected')
 
 
 
@@ -291,6 +286,12 @@ def connect():
 # MAIN STUFF
 ################################################################################################
 ################################################################################################
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    fav_icon = url_for('static', filename='favicon.ico')
+    return render_template('index.html', **locals())
+
 
 if __name__ == '__main__':
     socketio.run(app)

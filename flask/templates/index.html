@@ -23,7 +23,7 @@
         });
         //receive message details from server
         socket.on("newmessage", function (msg) {
-          console.log("Received message" + msg.message);
+          console.log("Received message" + msg);
           message = "<p>" + msg.message + "</p>";
 
           $("#message").append(message);
