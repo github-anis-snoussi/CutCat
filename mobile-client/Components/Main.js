@@ -11,6 +11,33 @@ import { Camera } from "expo-camera";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import axios from "axios";
 
+import StepIndicator from "react-native-step-indicator";
+
+const labels = ["scanning-qr", "scaning-item", "pointing-item"];
+const customStyles = {
+  stepIndicatorSize: 25,
+  currentStepIndicatorSize: 30,
+  separatorStrokeWidth: 2,
+  currentStepStrokeWidth: 3,
+  stepStrokeCurrentColor: "#bb8275",
+  stepStrokeWidth: 3,
+  stepStrokeFinishedColor: "#bb8275",
+  stepStrokeUnFinishedColor: "#aaaaaa",
+  separatorFinishedColor: "#bb8275",
+  separatorUnFinishedColor: "#aaaaaa",
+  stepIndicatorFinishedColor: "#bb8275",
+  stepIndicatorUnFinishedColor: "#ffffff",
+  stepIndicatorCurrentColor: "#ffffff",
+  stepIndicatorLabelFontSize: 13,
+  currentStepIndicatorLabelFontSize: 13,
+  stepIndicatorLabelCurrentColor: "#bb8275",
+  stepIndicatorLabelFinishedColor: "#ffffff",
+  stepIndicatorLabelUnFinishedColor: "#aaaaaa",
+  labelColor: "#999999",
+  labelSize: 13,
+  currentStepLabelColor: "#bb8275",
+};
+
 const WINDOW_HEIGHT = Dimensions.get("window").height;
 const WINDOW_WIDTH = Dimensions.get("window").width;
 const SESSION_RE =
@@ -24,6 +51,7 @@ export default function Main() {
   const [sessionId, setSessionId] = useState("");
   const [itemId, setItemId] = useState("");
   const [appStatus, setAppStatus] = useState("scanning-qr"); // can be: scanning-qr || loading || scaning-item || pointing-item
+  const [currentPosition, setCurrentPosition] = useState(0);
 
   useEffect(() => {
     onHandlePermission();
@@ -127,7 +155,9 @@ export default function Main() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: "black" }]}>
+    <View style={[styles.container, { backgroundColor: "#1e162d" }]}>
+      <View style={{ height: 30, backgroundColor: "#1e162d" }}></View>
+
       <Camera
         ref={cameraRef}
         style={styles.cameraContainer}
@@ -148,12 +178,27 @@ export default function Main() {
       )}
 
       <View style={styles.buttomControlsContainer}>
+        <View style={{ width: "100%", marginBottom: 20 }}>
+          <StepIndicator
+            customStyles={customStyles}
+            currentPosition={currentPosition}
+            labels={labels}
+            direction={"horizontal"}
+            stepCount={3}
+          />
+        </View>
         <TouchableOpacity
           activeOpacity={0.7}
           disabled={!isCameraReady}
           onPress={onSnap}
+          // onPress={() => setCurrentPosition(currentPosition + 1)}
           style={styles.capture}
-        />
+        >
+          <Image
+            style={styles.logoImage}
+            source={require("../assets/logo-white.png")}
+          />
+        </TouchableOpacity>
 
         <Text style={{ color: "white" }}> {appStatus} </Text>
       </View>
@@ -166,10 +211,13 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   capture: {
-    backgroundColor: "#5A45FF",
-    height: 70,
-    width: 70,
-    borderRadius: 35,
+    backgroundColor: "#4087b9",
+    height: 90,
+    width: 90,
+    borderRadius: 45,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   cameraContainer: {
     width: WINDOW_WIDTH,
@@ -184,9 +232,14 @@ const styles = StyleSheet.create({
   },
   buttomControlsContainer: {
     width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT - WINDOW_WIDTH * (4 / 3),
+    height: WINDOW_HEIGHT - WINDOW_WIDTH * (4 / 3) - 30,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+  },
+  logoImage: {
+    height: 60,
+    width: 60,
+    resizeMode: "contain",
   },
 });

@@ -1,6 +1,6 @@
 import React from "react";
-import Main from './Components/Main'
-import Loader from './Components/Loader'
+import Main from "./Components/Main";
+import Loader from "./Components/Loader";
 
 export default function App() {
   return (
@@ -9,4 +9,3 @@ export default function App() {
     </Loader>
   );
 }
-
