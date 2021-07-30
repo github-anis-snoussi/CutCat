@@ -197,34 +197,39 @@ export default function Main() {
         useCamera2Api={true}
         onBarCodeScanned={scanSessionQR}
         ratio={"4:3"}
-      >
-        {appStatus === "loading" ? (
-          <View
+      ></Camera>
+
+      {appStatus === "loading" ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            backgroundColor: "rgba(30, 22, 44, 0.32)",
+            width: WINDOW_WIDTH,
+            height: WINDOW_WIDTH * (4 / 3),
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 30,
+          }}
+        >
+          <Image
+            source={require("../assets/cat.gif")}
+            style={{ width: 150, height: 150 }}
+          />
+
+          <Text
             style={{
-              width: WINDOW_WIDTH,
-              height: WINDOW_WIDTH * (4 / 3),
-              justifyContent: "center",
-              alignItems: "center",
+              color: "white",
+              fontWeight: "bold",
+              fontSize: 18,
+              marginTop: 10,
             }}
           >
-            <Image
-              source={require("../assets/cat.gif")}
-              style={{ width: 150, height: 150 }}
-            />
-
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "bold",
-                fontSize: 18,
-                marginTop: 10,
-              }}
-            >
-              Loading {dots === 0 ? "" : ".".repeat(dots)}
-            </Text>
-          </View>
-        ) : null}
-      </Camera>
+            Loading {dots === 0 ? "" : ".".repeat(dots)}
+          </Text>
+        </View>
+      ) : null}
 
       {appStatus === "pointing-item" && (
         <Image
