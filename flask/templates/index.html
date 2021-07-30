@@ -6,91 +6,53 @@
     <title>CutCat</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="message"></div>
+    <button id="btn-join">JOIN</button>
+    <button id="btn-post-topic">POST-TOPIC</button>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-    <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
-    <script type="text/babel">
-      function Main() {
-        const [msg, setMsg] = React.useState([]);
-        const [topicName, setTopicName] = React.useState("");
-        const socket = io.connect(
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(async function () {
+        //connect to the socket server.
+        var socket = io.connect(
           "http://" + document.domain + ":" + location.port
         );
 
-        React.useEffect(() => {
-          if (topicName !== "") {
-            socket.on(topicName, handleMsgReceived);
-          }
-        }, [topicName]);
-
-        const handleMsgReceived = (receivedMsg) => {
-          console.log("Received message" + receivedMsg);
-          setMsg([...msg, receivedMsg.message]);
-        };
-
-        React.useEffect(() => {
-          fetch(
-            "http://" +
-              document.domain +
-              ":" +
-              location.port +
-              "/get_cur_session",
-            { method: "GET" }
-          )
-            .then((rez) => {
-              return rez.text();
-            })
-            .then((session_id_as_topic_name) => {
-              setTopicName(session_id_as_topic_name);
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-
-          return () => {
-            socket.close();
-          };
-        }, []);
-
-        const joinTopic = () => {
+        $("#btn-join").on("click", function () {
           fetch("http://" + document.domain + ":" + location.port + "/join", {
             method: "POST",
-          }).catch((e) => {
-            console.log(e);
           });
-        };
-
-        const postInTopic = () => {
-          console.log("will post in topic");
+        });
+        $("#btn-post-topic").on("click", function () {
           fetch(
             "http://" + document.domain + ":" + location.port + "/post_topic",
             {
               method: "POST",
             }
-          )
-            .then(() => {
-              console.log("posted");
-            })
-            .catch((e) => {
-              console.log(e);
+          );
+        });
+        fetch(
+          "http://" +
+            document.domain +
+            ":" +
+            location.port +
+            "/get_cur_session",
+          { method: "GET" }
+        )
+          .then((rez) => {
+            return rez.text();
+          })
+          .then((session_id_as_topic_name) => {
+            console.log("current session : ", session_id_as_topic_name);
+            //receive message details from server
+            socket.on(session_id_as_topic_name, function (msg) {
+              console.log("Received message" + msg);
+              message = "<p>" + msg.message + "</p>";
+
+              $("#message").append(message);
             });
-        };
-
-        return (
-          <div>
-            <h1> welcome </h1>
-            {msg.map((m) => (
-              <p>{m}</p>
-            ))}
-            <button onClick={joinTopic}>JOIN</button>
-            <button onClick={postInTopic}>POST-TOPIC</button>
-          </div>
-        );
-      }
-
-      ReactDOM.render(<Main />, document.getElementById("root"));
+          });
+      });
     </script>
   </body>
 </html>
