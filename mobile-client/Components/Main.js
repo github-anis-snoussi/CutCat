@@ -110,9 +110,11 @@ export default function Main() {
             console.log("all went well");
             setItemId(resp.data);
             setAppStatus("pointing-item");
+            setCurrentPosition(2);
           })
           .catch((err) => {
             setAppStatus("scaning-item");
+            setCurrentPosition(1);
             console.log("something not working : ", err.response);
           });
       } else if (appStatus === "pointing-item") {
@@ -134,9 +136,11 @@ export default function Main() {
           .then((resp) => {
             console.log("all went well: ", resp.data);
             setAppStatus("scaning-item");
+            setCurrentPosition(1);
           })
           .catch((err) => {
             setAppStatus("pointing-item");
+            setCurrentPosition(2);
             console.log("something not working : ", err.response);
           });
       }
@@ -152,8 +156,10 @@ export default function Main() {
       ) {
         setSessionId(data);
         setAppStatus("scaning-item");
+        setCurrentPosition(1);
       } else {
         setAppStatus("scanning-qr");
+        setCurrentPosition(0);
       }
     }
   };
@@ -254,7 +260,6 @@ export default function Main() {
           activeOpacity={0.7}
           disabled={!isCameraReady}
           onPress={onSnap}
-          // onPress={() => setCurrentPosition(currentPosition + 1)}
           style={styles.capture}
         >
           <Image
