@@ -267,8 +267,6 @@ export default function Main() {
             source={require("../assets/logo-white.png")}
           />
         </TouchableOpacity>
-
-        <Text style={{ color: "white" }}> {appStatus} </Text>
       </View>
     </View>
   );
