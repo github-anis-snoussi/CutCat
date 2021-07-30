@@ -247,15 +247,6 @@ export default function Main() {
       )}
 
       <View style={styles.buttomControlsContainer}>
-        <View style={{ width: "100%", marginBottom: 20 }}>
-          <StepIndicator
-            customStyles={customStyles}
-            currentPosition={currentPosition}
-            labels={labels}
-            direction={"horizontal"}
-            stepCount={3}
-          />
-        </View>
         <TouchableOpacity
           activeOpacity={0.7}
           disabled={!isCameraReady}
@@ -267,6 +258,18 @@ export default function Main() {
             source={require("../assets/logo-white.png")}
           />
         </TouchableOpacity>
+        <View>
+          <Text style={{ color: "white", fontSize: 10 }}>CutCat (beta)</Text>
+        </View>
+        <View style={{ width: "100%", marginTop: 20 }}>
+          <StepIndicator
+            customStyles={customStyles}
+            currentPosition={currentPosition}
+            labels={labels}
+            direction={"horizontal"}
+            stepCount={3}
+          />
+        </View>
       </View>
     </View>
   );
