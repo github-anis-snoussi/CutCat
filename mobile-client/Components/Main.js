@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  StatusBar,
 } from "react-native";
 import { Camera } from "expo-camera";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -13,7 +14,7 @@ import axios from "axios";
 
 import StepIndicator from "react-native-step-indicator";
 
-const labels = ["scanning-qr", "scaning-item", "pointing-item"];
+const labels = ["Connect", "Cut", "Paste"];
 const customStyles = {
   stepIndicatorSize: 25,
   currentStepIndicatorSize: 30,
@@ -156,6 +157,7 @@ export default function Main() {
 
   return (
     <View style={[styles.container, { backgroundColor: "#1e162d" }]}>
+      <StatusBar hidden={true} />
       <View style={{ height: 30, backgroundColor: "#1e162d" }}></View>
 
       <Camera
