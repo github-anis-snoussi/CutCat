@@ -14,29 +14,29 @@ import axios from "axios";
 
 import StepIndicator from "react-native-step-indicator";
 
-const labels = ["Connect", "Cut", "Paste"];
+const labels = ["CONNECT", "CUT", "PASTE"];
 const customStyles = {
   stepIndicatorSize: 25,
   currentStepIndicatorSize: 30,
   separatorStrokeWidth: 2,
   currentStepStrokeWidth: 3,
-  stepStrokeCurrentColor: "#bb8275",
+  stepStrokeCurrentColor: "#4087b9",
   stepStrokeWidth: 3,
-  stepStrokeFinishedColor: "#bb8275",
+  stepStrokeFinishedColor: "#4087b9",
   stepStrokeUnFinishedColor: "#aaaaaa",
-  separatorFinishedColor: "#bb8275",
+  separatorFinishedColor: "#4087b9",
   separatorUnFinishedColor: "#aaaaaa",
-  stepIndicatorFinishedColor: "#bb8275",
+  stepIndicatorFinishedColor: "#4087b9",
   stepIndicatorUnFinishedColor: "#ffffff",
   stepIndicatorCurrentColor: "#ffffff",
   stepIndicatorLabelFontSize: 13,
   currentStepIndicatorLabelFontSize: 13,
-  stepIndicatorLabelCurrentColor: "#bb8275",
+  stepIndicatorLabelCurrentColor: "#4087b9",
   stepIndicatorLabelFinishedColor: "#ffffff",
   stepIndicatorLabelUnFinishedColor: "#aaaaaa",
   labelColor: "#999999",
   labelSize: 13,
-  currentStepLabelColor: "#bb8275",
+  currentStepLabelColor: "#4087b9",
 };
 
 const WINDOW_HEIGHT = Dimensions.get("window").height;
@@ -53,6 +53,16 @@ export default function Main() {
   const [itemId, setItemId] = useState("");
   const [appStatus, setAppStatus] = useState("scanning-qr"); // can be: scanning-qr || loading || scaning-item || pointing-item
   const [currentPosition, setCurrentPosition] = useState(0);
+
+  const [dots, setDots] = useState(1);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDots((prevDots) => (prevDots === 3 ? 0 : prevDots + 1));
+    }, 600);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
 
   useEffect(() => {
     onHandlePermission();
@@ -158,7 +168,26 @@ export default function Main() {
   return (
     <View style={[styles.container, { backgroundColor: "#1e162d" }]}>
       <StatusBar hidden={true} />
-      <View style={{ height: 30, backgroundColor: "#1e162d" }}></View>
+      <View
+        style={{
+          height: 30,
+          backgroundColor: "#1e162d",
+          alignItems: "flex-end",
+          justifyContent: "center",
+          paddingRight: 20,
+        }}
+      >
+        {appStatus !== "scanning-qr" ? (
+          <View
+            style={{
+              height: 12,
+              width: 12,
+              borderRadius: 6,
+              backgroundColor: "green",
+            }}
+          />
+        ) : null}
+      </View>
 
       <Camera
         ref={cameraRef}
@@ -168,7 +197,34 @@ export default function Main() {
         useCamera2Api={true}
         onBarCodeScanned={scanSessionQR}
         ratio={"4:3"}
-      />
+      >
+        {appStatus === "loading" ? (
+          <View
+            style={{
+              width: WINDOW_WIDTH,
+              height: WINDOW_WIDTH * (4 / 3),
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Image
+              source={require("../assets/cat.gif")}
+              style={{ width: 150, height: 150 }}
+            />
+
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize: 18,
+                marginTop: 10,
+              }}
+            >
+              Loading {dots === 0 ? "" : ".".repeat(dots)}
+            </Text>
+          </View>
+        ) : null}
+      </Camera>
 
       {appStatus === "pointing-item" && (
         <Image
