@@ -14,23 +14,44 @@
     <script type="text/babel">
       function Main() {
         const [msg, setMsg] = React.useState([]);
-        const [topicName, setTopicName] = React.useState("");
         const socket = io.connect(
           "http://" + document.domain + ":" + location.port
         );
 
         React.useEffect(() => {
-          if (topicName !== "") {
-            socket.on(topicName, handleMsgReceived);
-          }
-        }, [topicName]);
+          console.group(
+            "%c CutCat",
+            "font-weight: bold; font-size: 50px;color: red; text-shadow: 3px 3px 0 rgb(217,31,38) , 6px 6px 0 rgb(226,91,14) , 9px 9px 0 rgb(245,221,8) , 12px 12px 0 rgb(5,148,68) , 15px 15px 0 rgb(2,135,206) , 18px 18px 0 rgb(4,77,145) , 21px 21px 0 rgb(42,21,113)"
+          );
+          console.log(
+            "Created by : " + "%cAnis Snoussi",
+            "background-color: rgb(217,31,38) ; color: #ffffff ; font-weight: bold ; padding: 4px ;"
+          );
+          console.log(
+            "Contact email : " + "%csnoussi.anis@insat.u-carthage.tn",
+            "background-color: rgb(217,31,38) ; color: #ffffff ; font-weight: bold ; padding: 4px ;"
+          );
+          console.log(
+            "Open Source : " + "%chttps://github.com/ansnoussi/CutCat",
+            "background-color: rgb(217,31,38) ; color: #ffffff ; font-weight: bold ; padding: 4px ;"
+          );
+          console.log(
+            "License : " + "%cI don't even know...",
+            "background-color: rgb(217,31,38) ; color: #ffffff ; font-weight: bold ; padding: 4px ;"
+          );
 
-        const handleMsgReceived = (receivedMsg) => {
-          console.log("Received message" + receivedMsg);
-          setMsg([...msg, receivedMsg.message]);
+          console.groupEnd();
+
+          return socket.disconnect();
+        }, []);
+
+        const joinTopic = () => {
+          fetch("http://" + document.domain + ":" + location.port + "/join", {
+            method: "POST",
+          });
         };
 
-        React.useEffect(() => {
+        const listenToEevnts = () => {
           fetch(
             "http://" +
               document.domain +
@@ -43,23 +64,17 @@
               return rez.text();
             })
             .then((session_id_as_topic_name) => {
-              setTopicName(session_id_as_topic_name);
+              socket.on(session_id_as_topic_name, (receivedMsg) => {
+                console.log("Received message" + receivedMsg);
+                setMsg([...msg, receivedMsg.message]);
+              });
+            })
+            .then(() => {
+              console.log("started listening for events.");
             })
             .catch((e) => {
               console.log(e);
             });
-
-          return () => {
-            socket.close();
-          };
-        }, []);
-
-        const joinTopic = () => {
-          fetch("http://" + document.domain + ":" + location.port + "/join", {
-            method: "POST",
-          }).catch((e) => {
-            console.log(e);
-          });
         };
 
         const postInTopic = () => {
@@ -85,6 +100,7 @@
               <p>{m}</p>
             ))}
             <button onClick={joinTopic}>JOIN</button>
+            <button onClick={listenToEevnts}>LISTEN</button>
             <button onClick={postInTopic}>POST-TOPIC</button>
           </div>
         );
