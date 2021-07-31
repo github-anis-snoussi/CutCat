@@ -47,7 +47,10 @@
 
           console.groupEnd();
 
-          return socket.disconnect();
+          // this breaks everything
+          return () => {
+            socket.disconnect();
+          };
         }, []);
 
         const joinTopic = () => {

@@ -266,6 +266,7 @@ def listener(topic=pub.AUTO_TOPIC,payload=None):
     # always get the topic in this form TOPIC_NAME(1), so I have to clean it
     actual_topic_name = str(topic)[:-3]
     socketio.emit(actual_topic_name,{'message': 'received on {} this: {}'.format(actual_topic_name , payload)  })
+    socketio.sleep(0)
 
 
 @app.route('/join', methods=['POST'])
