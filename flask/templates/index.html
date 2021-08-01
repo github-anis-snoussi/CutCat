@@ -12,18 +12,38 @@
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
     <script type="text/babel">
-      function Main() {
+      function Main({ sessionId, socket }) {
         const [msg, setMsg] = React.useState([]);
+
+        const handler = (message) => {
+          console.log(message.message);
+          setMsg([...msg, message.message]);
+        };
+
+        React.useEffect(() => {
+          socket.on(sessionId, handler);
+          return () => {
+            socket.off(sessionId, handler);
+          };
+        }, []);
+
+        return (
+          <div>
+            <h1> welcome </h1>
+            {msg.map((m) => (
+              <p>{m}</p>
+            ))}
+          </div>
+        );
+      }
+
+      function MainContainer() {
+        const [sessionId, setSessionId] = React.useState("");
         const socket = io.connect(
           "http://" + document.domain + ":" + location.port
         );
 
         React.useEffect(() => {
-          // // this will increase file size, but I like it, who cares.
-          // console.log(
-          //   "%c                               .=#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%*-                    \n                              =@@@@%%%%%%%%%@@@@%%%%%%@@@@%%%%%%%%%@@@%:                  \n                             -@@@=          %@@#     .@@@+         .*@@@.                 \n                             *@@%           :@@@%+-=+@@@%           .@@@-                 \n                             *@@%            .*@@@@@@@%+            .@@@-                 \n                    :=+=-.   *@@%               :-=--.              .@@@-                 \n                  .%@@@@@@@+.*@@#                                   .@@@-                 \n                  =@@@--+%@@@@@@#                                   .@@@-                 \n                  =@@@.   :%@@@@#                                   .@@@-                 \n                  -@@@      #@@@#   .*.                      =.     .@@@-                 \n                   .-.       @@@#   :@@:                    #@+     .@@@-                 \n                             *@@#   :@@@:                 .%@@+     .@@@-                 \n                   -=:       *@@#   :@@@@+++++++++++++++==%@@@+     .@@@@@@@%#=.          \n                  :@@@       *@@#   :@@@@@@@@@@@@@@@@@@@@@@@@@+     .@@@%%%%@@@@#.        \n                   .:        *@@#   :@@@@@@@@@@@@@@@@@@@@@@@@@+     .@@@-    :%@@%        \n                             *@@#   :@@@@@%++#@@@@@@@%++#@@@@@+     .@@@-     :@@@:       \n                  .*#=       *@@#   :@@@@# ** *@@@@@% +#.=@@@@+     .@@@-     *@@@.       \n                  =@@@       *@@#   :@@@@@-::-%@@@@@@=.::%@@@@+   . .@@@#+++#@@@@-        \n                  +@@@       *@@#   :@@@@@@@@@@@***%@@@@@@@@@@+ -%+ .@@@@@@@@@@@=         \n                  %@@*       *@@#   :@@@@@@@@@@@* +%@@@@@@@@@@+-@:  .@@@=...-*@@@*        \n                 -@@@:       *@@#   :@@@@@@@@@@@@%@@@@@@@@@@@@+%*   .@@@-     -@@@:       \n                .@@@*        *@@#   :@@@@@@@@@@@@@@@@@@@@@@@@@+%+   .@@@-     -@@@:       \n                *@@@         *@@#   :@@@@@@@@@@@@@@@@@@@@@@@@@+*%   .@@@+:::-*@@@*        \n               .@@@+         *@@#   :@@@@@@@@@@@@@@@@@@@@@@@@@+ %*  .@@@@@@@@@@@=         \n               -@@@.         *@@#   :@@@@@@@@@@@@@@@@@@@@@@@@@+  #* .@@@*+++*@@@@-        \n               +@@@          *@@#   :@@@@@@@@@@@@@@@@@@@@@@@@@+  :@ .@@@-     *@@@.       \n               #@@#          *@@#    +%@@@@@@@@@@@@@@@@@@@@@@@#**#+ .@@@-     :@@@:       \n               %@@*          *@@#                                   .@@@-    -%@@%        \n               @@@+          *@@#                                   .@@@@%%%@@@@#.        \n              +@@@+          *@@#                                   .@@@@%%%@@@@*.        \n           .+@@@@=           *@@#                                   .@@@-    -%@@%        \n         .+@@@%=             *@@#                                   .@@@-     :@@@:       \n        *@@@%-               *@@%                                   .@@@-     *@@@.       \n        #@%-                 *@@%                                   .@@@*+++*@@@@-        \n                             =@@@:                                  =@@@@@@@@@%=          \n                              #@@@#+++++++++++++++++++++++++++++++*%@@@+::::.             \n                               -#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*.                   \n                                  .:::::::::::::::+#@@@@%=::::::::..                      \n                                            .:=*%@@@@@*:                                  \n                                   ::-=+*#%@@@@@@%*=.                                     \n                                 -@@@@@@@@@%*+-.                                          \n                               :%@@@*=-:.                                                 \n                             .*@@@*.                                                      \n                            +@@@%:                                                        \n                           .%@%-                                                          \n",
-          //   "color: rgb(217,31,38); font-size: 10px ; font-weight: bold ;"
-          // );
           console.group(
             "%c CutCat",
             "font-weight: bold; font-size: 50px;color: red; text-shadow: 3px 3px 0 rgb(217,31,38) , 6px 6px 0 rgb(226,91,14) , 9px 9px 0 rgb(245,221,8) , 12px 12px 0 rgb(5,148,68) , 15px 15px 0 rgb(2,135,206) , 18px 18px 0 rgb(4,77,145) , 21px 21px 0 rgb(42,21,113)"
@@ -46,39 +66,28 @@
           );
 
           console.groupEnd();
-
-          // this breaks everything
-          return () => {
-            socket.disconnect();
-          };
         }, []);
 
         const joinTopic = () => {
           fetch("http://" + document.domain + ":" + location.port + "/join", {
             method: "POST",
-          });
-        };
+          })
+            .then(() => {
+              return fetch(
+                "http://" +
+                  document.domain +
+                  ":" +
+                  location.port +
+                  "/get_cur_session",
+                { method: "GET" }
+              );
+            })
 
-        const listenToEevnts = () => {
-          fetch(
-            "http://" +
-              document.domain +
-              ":" +
-              location.port +
-              "/get_cur_session",
-            { method: "GET" }
-          )
             .then((rez) => {
               return rez.text();
             })
             .then((session_id_as_topic_name) => {
-              socket.on(session_id_as_topic_name, (receivedMsg) => {
-                console.log("Received message" + receivedMsg);
-                setMsg([...msg, receivedMsg.message]);
-              });
-            })
-            .then(() => {
-              console.log("started listening for events.");
+              setSessionId(session_id_as_topic_name);
             })
             .catch((e) => {
               console.log(e);
@@ -103,18 +112,14 @@
 
         return (
           <div>
-            <h1> welcome </h1>
-            {msg.map((m) => (
-              <p>{m}</p>
-            ))}
+            {sessionId !== "" && <Main sessionId={sessionId} socket={socket} />}
             <button onClick={joinTopic}>JOIN</button>
-            <button onClick={listenToEevnts}>LISTEN</button>
-            <button onClick={postInTopic}>POST-TOPIC</button>
+            <button onClick={postInTopic}>TEST</button>
           </div>
         );
       }
 
-      ReactDOM.render(<Main />, document.getElementById("root"));
+      ReactDOM.render(<MainContainer />, document.getElementById("root"));
     </script>
   </body>
 </html>
