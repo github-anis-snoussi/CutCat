@@ -94,7 +94,10 @@
 
             {appStatus === "open-for-connections" && (
               <div style={styles.qrContainer}>
-                <img src="{{ qrcode(session.sid, error_correction='H', icon_img='https://i.imgur.com/h8WBNH0.jpeg')}}" />
+                <img
+                  style={styles.qrCode}
+                  src="{{ qrcode(session.sid, error_correction='H', icon_img='https://i.imgur.com/h8WBNH0.jpeg')}}"
+                />
                 <button
                   style={styles.startButton}
                   onClick={() => (window.location.href = "/show_background")}
@@ -132,6 +135,10 @@
         form: {
           marginTop: 25,
           color: "white",
+        },
+        qrCode: {
+          backgroundColor: "white",
+          padding: 10,
         },
       };
 

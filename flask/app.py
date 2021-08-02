@@ -215,6 +215,8 @@ def point_item():
         # Save the image now
         background.save(os.path.join(app.config['UPLOAD_FOLDER'], background_filename))
 
+        # we update the background image in the web using sockets:
+        pub.sendMessage(request.form['session-id'], payload='update-bg')
         return r.text
 
     # This is temporary
@@ -268,7 +270,7 @@ def join():
     pub.subscribe(listener, session.sid)
     return "all good!"
 
-@app.route('/force_update', methods=['POST'])
+@app.route('/force_update', methods=['GET'])
 def force_update():
     pub.sendMessage(session.sid, payload='update-bg')
     return "all good!"
