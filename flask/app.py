@@ -267,8 +267,8 @@ def join():
     pub.subscribe(listener, session.sid)
     return "all good!"
 
-@app.route('/post_topic', methods=['POST'])
-def post_topic():
+@app.route('/force_update', methods=['POST'])
+def force_update():
     pub.sendMessage(session.sid, payload='update-bg')
     return "all good!"
 

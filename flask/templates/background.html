@@ -6,9 +6,12 @@
     <title>CutCat</title>
   </head>
   <body>
-    <img id="bg" src="{{ background_image }}" />
-    <div id="message"></div>
-    <button id="btn-post-topic">FORCE-UPDATE</button>
+    <div>
+      <img id="bg" src="{{ background_image }}" />
+    </div>
+    <div>
+      <button id="btn-force-update">FORCE-UPDATE</button>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>
@@ -18,9 +21,9 @@
           "http://" + document.domain + ":" + location.port
         );
 
-        $("#btn-post-topic").on("click", function () {
+        $("#btn-force-update").on("click", function () {
           fetch(
-            "http://" + document.domain + ":" + location.port + "/post_topic",
+            "http://" + document.domain + ":" + location.port + "/force_update",
             {
               method: "POST",
             }
@@ -52,9 +55,6 @@
                 "{{ background_image }}?timestamp=" + new Date().getTime()
               );
               console.log("Received message" + msg);
-              message = "<p>" + msg.message + "</p>";
-
-              $("#message").append(message);
             });
           });
       });
