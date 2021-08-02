@@ -208,9 +208,13 @@ def point_item():
         # THIS SHOULD BE DONE IN A BETTER WAY, BUT FOR NOW I AM DOWNSIZING x10
         item = item.resize((round(item.size[0]*0.1), round(item.size[1]*0.1)))
 
+        # we center the paste coords
+        centered_x = x - round(item.size[0]*0.5)
+        centered_y = y - round(item.size[1]*0.5)
+
         # Paste the image in the right spot
         # Use item also as a mask to get transparent background
-        background.paste(item, (x,y), item)
+        background.paste(item, (centered_x,centered_y), item)
 
         # Save the image now
         background.save(os.path.join(app.config['UPLOAD_FOLDER'], background_filename))
