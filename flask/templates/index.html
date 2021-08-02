@@ -14,6 +14,34 @@
       function App() {
         const [appStatus, setAppStatus] = React.useState("upload-bg"); // app status can be : upload-bg || open-for-connections
         const [selectedFile, setSelectedFile] = React.useState(null);
+        const [cursorXY, setCursorXY] = React.useState({ x: -100, y: -100 });
+        const [cursorBG, setCursorBG] = React.useState("mouse-up.png");
+
+        React.useEffect(() => {
+          const moveCursor = (e) => {
+            const x = e.clientX - 20;
+            const y = e.clientY - 20;
+            setCursorXY({ x, y });
+          };
+
+          const downCursor = (e) => {
+            setCursorBG("mouse-down.png");
+          };
+
+          const upCursor = (e) => {
+            setCursorBG("mouse-up.png");
+          };
+
+          window.addEventListener("mousemove", moveCursor);
+          window.addEventListener("mousedown", downCursor);
+          window.addEventListener("mouseup", upCursor);
+
+          return () => {
+            window.removeEventListener("mousemove", moveCursor);
+            window.removeEventListener("mousedown", downCursor);
+            window.removeEventListener("mouseup", upCursor);
+          };
+        }, []);
 
         React.useEffect(() => {
           console.group(
@@ -106,6 +134,19 @@
                 </button>
               </div>
             )}
+            <img
+              src={
+                "http://" +
+                document.domain +
+                ":" +
+                location.port +
+                "/static/" +
+                cursorBG
+              }
+              style={Object.assign({}, styles.cursor, {
+                transform: `translate3d(${cursorXY.x}px, ${cursorXY.y}px, 0)`,
+              })}
+            />
           </div>
         );
       }
@@ -140,9 +181,22 @@
           backgroundColor: "white",
           padding: 10,
         },
+        cursor: {
+          position: "fixed",
+          left: 0,
+          top: 0,
+          width: 40,
+          height: 40,
+          pointerEvents: "none",
+        },
       };
 
       ReactDOM.render(<App />, document.getElementById("root"));
     </script>
+    <style>
+      * {
+        cursor: none;
+      }
+    </style>
   </body>
 </html>
