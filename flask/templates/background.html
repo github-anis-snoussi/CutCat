@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="{{ fav_icon }}" />
+    <title>CutCat</title>
+  </head>
+  <body>
+    <img id="bg" src="{{ background_image }}" />
+    <div id="message"></div>
+    <button id="btn-post-topic">FORCE-UPDATE</button>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(async function () {
+        //connect to the socket server.
+        var socket = io.connect(
+          "http://" + document.domain + ":" + location.port
+        );
+
+        $("#btn-post-topic").on("click", function () {
+          fetch(
+            "http://" + document.domain + ":" + location.port + "/post_topic",
+            {
+              method: "POST",
+            }
+          );
+        });
+        fetch("http://" + document.domain + ":" + location.port + "/join", {
+          method: "POST",
+        })
+          .then(() => {
+            return fetch(
+              "http://" +
+                document.domain +
+                ":" +
+                location.port +
+                "/get_cur_session",
+              { method: "GET" }
+            );
+          })
+
+          .then((rez) => {
+            return rez.text();
+          })
+          .then((session_id_as_topic_name) => {
+            console.log("current session : ", session_id_as_topic_name);
+            //receive message details from server
+            socket.on(session_id_as_topic_name, function (msg) {
+              $("#bg").attr(
+                "src",
+                "{{ background_image }}?timestamp=" + new Date().getTime()
+              );
+              console.log("Received message" + msg);
+              message = "<p>" + msg.message + "</p>";
+
+              $("#message").append(message);
+            });
+          });
+      });
+    </script>
+  </body>
+</html>

@@ -7,42 +7,11 @@
   </head>
   <body>
     <div id="root"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-    <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script type="text/babel">
-      function Main({ sessionId, socket }) {
-        const [msg, setMsg] = React.useState([]);
-
-        const handler = (message) => {
-          console.log(message.message);
-          setMsg([...msg, message.message]);
-        };
-
-        React.useEffect(() => {
-          socket.on(sessionId, handler);
-          return () => {
-            socket.off(sessionId, handler);
-          };
-        }, []);
-
-        return (
-          <div>
-            <h1> welcome </h1>
-            {msg.map((m) => (
-              <p>{m}</p>
-            ))}
-          </div>
-        );
-      }
-
-      function MainContainer() {
-        const [sessionId, setSessionId] = React.useState("");
-        const socket = io.connect(
-          "http://" + document.domain + ":" + location.port
-        );
-
+      function App() {
         React.useEffect(() => {
           console.group(
             "%c CutCat",
@@ -68,58 +37,10 @@
           console.groupEnd();
         }, []);
 
-        const joinTopic = () => {
-          fetch("http://" + document.domain + ":" + location.port + "/join", {
-            method: "POST",
-          })
-            .then(() => {
-              return fetch(
-                "http://" +
-                  document.domain +
-                  ":" +
-                  location.port +
-                  "/get_cur_session",
-                { method: "GET" }
-              );
-            })
-
-            .then((rez) => {
-              return rez.text();
-            })
-            .then((session_id_as_topic_name) => {
-              setSessionId(session_id_as_topic_name);
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-        };
-
-        const postInTopic = () => {
-          console.log("will post in topic");
-          fetch(
-            "http://" + document.domain + ":" + location.port + "/post_topic",
-            {
-              method: "POST",
-            }
-          )
-            .then(() => {
-              console.log("posted");
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-        };
-
-        return (
-          <div>
-            {sessionId !== "" && <Main sessionId={sessionId} socket={socket} />}
-            <button onClick={joinTopic}>JOIN</button>
-            <button onClick={postInTopic}>TEST</button>
-          </div>
-        );
+        return <div>Hello there</div>;
       }
 
-      ReactDOM.render(<MainContainer />, document.getElementById("root"));
+      ReactDOM.render(<App />, document.getElementById("root"));
     </script>
   </body>
 </html>

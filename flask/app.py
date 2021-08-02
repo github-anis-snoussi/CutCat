@@ -96,15 +96,11 @@ def set_background():
 @app.route('/show_background')
 def show_background():
     if session.get('background') is not None:
-        return render_template_string("""
-                    <img src="{{ url_for('display_image', filename=session['background']) }}">
-                    <p> this is the session qr code: {{session.sid}} </p>
-                    <img src="{{ qrcode(session.sid, error_correction='H', icon_img='https://i.imgur.com/h8WBNH0.jpeg')  }}">
-            """)
+        fav_icon = url_for('static', filename='favicon.ico')
+        background_image = url_for('display_image', filename=session['background'])
+        return render_template('background.html', **locals())
     else:
-        return render_template_string("""
-                    <h1>Welcome! Please upload your image here <a href="{{ url_for('set_background') }}">here.</a></h1>
-            """)
+        return redirect(url_for('index'))
 
 # deletes the background image
 @app.route('/delete_background')
@@ -113,9 +109,6 @@ def delete_background():
     os.remove(os.path.join(app.config['UPLOAD_FOLDER'], session['background'])) 
     session.pop('background', default=None)
     return '<h1>Session deleted!</h1>'
-
-
-
 
 
 
@@ -276,7 +269,7 @@ def join():
 
 @app.route('/post_topic', methods=['POST'])
 def post_topic():
-    pub.sendMessage(session.sid, payload='testing')
+    pub.sendMessage(session.sid, payload='update-bg')
     return "all good!"
 
 ################################################################################################
