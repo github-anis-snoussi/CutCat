@@ -88,7 +88,7 @@ def set_background():
         <form method="post" action="/set_background" enctype="multipart/form-data">
             <label for="background-image">Upload your background:</label>
             <input type="file" id="background-image" name="background_image" accept="image/*" required />
-            <button type="submit">Submit</button
+            <button type="submit">Submit</button>
         </form>
         """
 
@@ -281,6 +281,7 @@ def force_update():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     fav_icon = url_for('static', filename='favicon.ico')
+    white_logo = redirect(url_for('static', filename='logo-text-white.png' ), code=301)
     return render_template('index.html', **locals())
 
 

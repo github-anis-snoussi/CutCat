@@ -12,6 +12,8 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script type="text/babel">
       function App() {
+        const [appStatus, setAppStatus] = React.useState("upload-bg"); // app status can be : upload-bg || open-for-connections
+
         React.useEffect(() => {
           console.group(
             "%c CutCat",
@@ -37,8 +39,80 @@
           console.groupEnd();
         }, []);
 
-        return <div>Hello there</div>;
+        return (
+          <div style={styles.container}>
+            {appStatus === "upload-bg" && (
+              <div style={styles.qrContainer}>
+                <img
+                  src={
+                    "http://" +
+                    document.domain +
+                    ":" +
+                    location.port +
+                    "/static/logo-text-white.png"
+                  }
+                />
+                <form
+                  style={styles.form}
+                  method="post"
+                  action="/set_background"
+                  enctype="multipart/form-data"
+                >
+                  <label for="background-image">Upload your background: </label>
+                  <input
+                    type="file"
+                    id="background-image"
+                    name="background_image"
+                    accept="image/*"
+                    required
+                  />
+                  <button type="submit">Submit</button>
+                </form>
+              </div>
+            )}
+
+            {appStatus === "open-for-connections" && (
+              <div style={styles.qrContainer}>
+                <img src="{{ qrcode(session.sid, error_correction='H', icon_img='https://i.imgur.com/h8WBNH0.jpeg')}}" />
+                <button
+                  style={styles.startButton}
+                  onClick={() => (window.location.href = "/show_background")}
+                >
+                  Proceed to Background
+                </button>
+              </div>
+            )}
+          </div>
+        );
       }
+
+      const styles = {
+        container: {
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "98vh",
+          backgroundColor: "black",
+        },
+        text: {
+          color: "#dcdcdc",
+          fontSize: "1.125rem",
+          fontWeight: 500,
+        },
+        qrContainer: {
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        startButton: {
+          marginTop: 25,
+        },
+        form: {
+          marginTop: 25,
+          color: "white",
+        },
+      };
 
       ReactDOM.render(<App />, document.getElementById("root"));
     </script>
