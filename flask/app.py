@@ -82,7 +82,8 @@ def set_background():
             f.write(image.filename.split(".")[-1])
 
         session['background'] = file_name
-        return redirect(url_for('show_background'))
+        return "All good."
+        # return redirect(url_for('show_background'))
 
     return """
         <form method="post" action="/set_background" enctype="multipart/form-data">

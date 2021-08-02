@@ -13,6 +13,7 @@
     <script type="text/babel">
       function App() {
         const [appStatus, setAppStatus] = React.useState("upload-bg"); // app status can be : upload-bg || open-for-connections
+        const [selectedFile, setSelectedFile] = React.useState(null);
 
         React.useEffect(() => {
           console.group(
@@ -39,6 +40,25 @@
           console.groupEnd();
         }, []);
 
+        const submitBackground = (e) => {
+          e.preventDefault();
+          if (selectedFile) {
+            let data = new FormData();
+            data.append("background_image", selectedFile);
+            fetch("/set_background", {
+              method: "POST",
+              body: data,
+            })
+              .then((response) => {
+                console.log(response);
+                setAppStatus("open-for-connections");
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+        };
+
         return (
           <div style={styles.container}>
             {appStatus === "upload-bg" && (
@@ -55,7 +75,7 @@
                 <form
                   style={styles.form}
                   method="post"
-                  action="/set_background"
+                  onSubmit={submitBackground}
                   enctype="multipart/form-data"
                 >
                   <label for="background-image">Upload your background: </label>
@@ -65,6 +85,7 @@
                     name="background_image"
                     accept="image/*"
                     required
+                    onChange={(e) => setSelectedFile(e.target.files[0])}
                   />
                   <button type="submit">Submit</button>
                 </form>
