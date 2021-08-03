@@ -124,7 +124,9 @@
               <div style={styles.qrContainer}>
                 <img
                   style={styles.qrCode}
-                  src="{{ qrcode(session.sid, error_correction='H', icon_img='https://i.imgur.com/h8WBNH0.jpeg')}}"
+                  src={
+                    "{{ qrcode(session.sid, error_correction='H', icon_img='https://i.imgur.com/h8WBNH0.jpeg')}}"
+                  }
                 />
                 <button
                   style={styles.startButton}
