@@ -1,5 +1,11 @@
 # CutCat
 
+## Video worth a thousand words
+
+https://user-images.githubusercontent.com/33237270/128265329-21e9d5a4-ab36-4bab-8735-88607656f053.mp4
+
+
+
 
 ![Architecture Description](./overview.drawio.svg)
 ## INFOS
