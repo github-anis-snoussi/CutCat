@@ -43,7 +43,9 @@ const WINDOW_HEIGHT = Dimensions.get("window").height;
 const WINDOW_WIDTH = Dimensions.get("window").width;
 const SESSION_RE =
   /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/;
-const SERVER_URL = "http://192.168.1.19:5000/";
+
+const SERVER_IP = "192.168.1.19"
+const SERVER_URL = "http://" + SERVER_IP + ":5000/";
 
 export default function Main() {
   const cameraRef = useRef();
