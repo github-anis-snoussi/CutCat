@@ -1,4 +1,5 @@
 # CutCat
+![Black and White Logos](./logo-files/bw.png)
 CutCat is an app that lets you copy objects from real life and directly paste them on a background using the magic of [OpenCV SIFT](https://docs.opencv.org/master/da/df5/tutorial_py_sift_intro.html) and a pre-trained [U^2 Net model](https://github.com/xuebinqin/U-2-Net) 
 ## Video demo
 
@@ -27,7 +28,7 @@ and replace it in the React Native app in `mobile-client/Components/Main.js` in 
 
 4. Start the React Native app using 
 ```bash
-expo start
+cd mobile-client && expo start
 ```
 and navigate to `http://localhost:5000` in your web browser to start using CutCat.
 ## Want to contribute ?
