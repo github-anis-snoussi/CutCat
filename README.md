@@ -20,7 +20,7 @@ git clone git@github.com:ansnoussi/CutCat.git && cd CutCat
 ```bash
 docker-compose up
 ```
-3. Now that everything is running, grab the ip of the guncorn reverse proxy
+3. Now that everything is running, grab the ip of the gunicorn application server
 ```bash
 docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' cutcat-web
 ```
@@ -35,6 +35,7 @@ and navigate to `http://localhost:5000` in your web browser to start using CutCa
 This was a side project that I finished in parallel with other side projects and a full-time job, so it's far from perfect :
 - the flask server is extensivly using slow file i/o
 - image resizing/compressing could be done in React Native to reduce execution time
+- the UI could benefit from some changes
 - ...
 
 so any contribution will be appreciated, just open a PR and I will be more than happy to respond.
