@@ -5,9 +5,9 @@ CutCat is an app that lets you copy objects from real life and directly paste th
 
 https://user-images.githubusercontent.com/33237270/128265329-21e9d5a4-ab36-4bab-8735-88607656f053.mp4
 
-## Gneral Architecture
+## General Architecture
 
-![Gneral Architecture](./overview.drawio.svg)
+![General Architecture](./overview.drawio.svg)
 
 ## How to use ?
 Everything you need to run CutCat is already dockerized and ready to go.
