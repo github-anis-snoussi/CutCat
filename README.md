@@ -1,7 +1,8 @@
 # CutCat
 ![Black and White Logos](./logo-files/bw.png)
 CutCat is an app that lets you copy objects from real life and directly paste them on a background using the magic of [OpenCV SIFT](https://docs.opencv.org/master/da/df5/tutorial_py_sift_intro.html) and a pre-trained [U^2 Net model](https://github.com/xuebinqin/U-2-Net) 
-## Video demo
+
+# Video demo 📱 👨‍💻
 
 https://user-images.githubusercontent.com/33237270/128265329-21e9d5a4-ab36-4bab-8735-88607656f053.mp4
 
