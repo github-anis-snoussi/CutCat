@@ -14,7 +14,7 @@
     "expo-barcode-scanner": "~10.2.2",
     "expo-camera": "~11.2.2",
     "expo-status-bar": "~1.0.4",
-    "react": "16.13.1",
+    "react": "16.14.0",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
     "react-native-step-indicator": "^1.0.3",
